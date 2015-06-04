@@ -1,0 +1,91 @@
+body {
+	font-family: 'Montserrat', sans-serif;
+}
+
+/*LAYOUT*/
+
+.footer {
+	width: 100%;
+	height: 50px;
+	margin: none;
+	position: absolute;
+	bottom: 0;
+	background-color: rgba(50, 50, 255, 1);
+	color: white;
+	text-align: center;
+}
+
+/*HOMEPAGE*/
+
+.banner {
+	width: 100%;
+	line-height: 50px;
+	margin: none;
+	position: absolute;
+	background-color: rgba(50, 50, 255, 1);
+	color: white;
+	text-align: center;
+}
+
+.homebox {
+	float: left;
+	width: 25%;
+	height: 450px;
+	border: solid 1px;
+	border-color: rgba(50, 50, 255, 1);
+	border-radius: 10px;
+	margin-top: 150px;
+	margin-left: 11%;
+	margin-right: 11%;
+	background-color: white;
+	text-align: center;
+	color: black;
+	padding: 10px;
+}
+
+
+.homeform {
+	text-align: left;
+}
+
+.homelabel {
+	width: 90%;
+	display: inline-block;
+	margin-left: 10px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	color: black;
+}
+
+.homefield {
+	width: 90%;
+	display: inline-block;
+	margin-left: 10px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	border: solid 1px;
+	border-color: rgba(50, 50, 255, 1);
+	border-radius: 5px;
+}
+
+.homesubmit {
+	width: 40%;
+	height: 30px;
+	margin-top: 30px;
+	margin-bottom: 15%;
+	margin-left: 30%;
+	margin-right: auto;
+	background-color: rgba(50, 50, 255, 1);
+	color: white;
+	border: none;
+	border-radius: 5px;
+}
+
+
+
+
+
+
+
+
+

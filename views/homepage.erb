@@ -1,0 +1,37 @@
+<div class="banner">
+
+	<h1>Welcome to Jake's FORUM</h1>
+
+</div>
+
+
+<!-- create new user -->
+<div class="homebox">
+	<h2 class="homelabel">Sign Up</h2>
+	<form class="homeform" action="/user/new" method="post">
+		<label class="homelabel" for "fname">First Name:</label>
+		<input class="homefield" type="text" name="fname" placeholder="First Name"/>
+		<label class="homelabel" for "lname">Last Name:</label>
+		<input class="homefield" type="text" name="lname" placeholder="Last Name"/>
+		<label class="homelabel" for "email">E-mail Address:</label>
+		<input class="homefield" type="text" name="email" placeholder="E-mail Address"/>
+		<label class="homelabel" for "password1">Password:</label>
+		<input class="homefield" type="password" name="pwd1" placeholder="Password"/>
+		<label class="homelabel" for "password2">Repeat Password:</label>
+		<input class="homefield" type="password" name="pwd2" placeholder="Password"/>
+		<input class="homesubmit" type="submit" value="Sign Me Up!"/>
+	</form>
+</div>
+
+<!-- user login -->
+<div class="homebox">
+	<h2 class="homelabel">Login</h2>
+	<form class="homeform" action="/user/login" method="post">
+		<label class="homelabel" for "email">E-mail Address:</label>
+		<input class="homefield" type="text" name="email" placeholder="E-mail Address"/>
+		<label class="homelabel" for "password1">Password:</label>
+		<input class="homefield" type="password" name="pwd1" placeholder="Password"/>
+		<input class="homesubmit" type="submit" value="Login"/>
+	</form>
+
+</div>
