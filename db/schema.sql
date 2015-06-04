@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS forum_db;
+-- DROP DATABASE IF EXISTS forum_db;
 
-CREATE DATABASE forum_db;
+-- CREATE DATABASE forum_db;
 
 \c forum_db
 
@@ -15,5 +15,8 @@ CREATE TABLE users (
 	image VARCHAR,
 	phone VARCHAR,
 	show_location BOOLEAN NOT NULL,
-	get_notifications VARCHAR
+	get_notifications VARCHAR,
+	bio: TEXT
 );
+
+

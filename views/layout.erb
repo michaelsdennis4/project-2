@@ -4,10 +4,10 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>Forum</title>
-	<link rel="stylesheet" href="stylesheets/normalize.css">
-	<link rel="stylesheet" href="stylesheets/style.css">
-	<script type="text/javascript" src="scripts/jquery-2.1.4.js"></script>
-	<script type="text/javascript" src="scripts/main.js"></script>
+	<link rel="stylesheet" href="/stylesheets/normalize.css">
+	<link rel="stylesheet" href="/stylesheets/style.css">
+	<script type="text/javascript" src="/scripts/jquery-2.1.4.js"></script>
+	<script type="text/javascript" src="/scripts/main.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
 </head>
 <body>
@@ -15,7 +15,9 @@
 	<%= yield %>
 
 	<div class="footer">
-		
+		<% if (@current_user_name) %>
+			<h5>You are currently logged in as <%= @current_user_name %></h5>
+		<% end %>
 	</div>
 
 	

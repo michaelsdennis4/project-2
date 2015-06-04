@@ -5,9 +5,6 @@ require_relative "models/objects"
 
 module Forum
 
-	$message_new = ""
-	$message_login = ""
-
 	class Server < Sinatra::Base
 
 		include Models
@@ -17,41 +14,47 @@ module Forum
       set :sessions, true
     end
 
+    def current_user
+      session[:user_id]
+    end
+
+    def logged_in?
+      !current_user.nil?
+    end
+
     get('/') do
-    	@message_new = $message_new
+    	@errors = []
     	erb :homepage
     end
 
-    post('/user/new') do
-    	$message_new = ""
-			$message_login = ""
-    	if (params[:fname].length == 0)
-    		$message_new = "Please enter a first name"
-    		redirect '/'
-    	elsif (params[:lname].length == 0)
-    	 	$message_new = "Please enter a last name"
-    		redirect '/'
-    	elsif ((params[:email].length == 0) || (!params[:email].include?('@')) || (!params[:email].include?('.')))
-    		$message_new = "Please enter a valid e-mail"
-    		redirect '/'
-    	elsif (params[:pwd1].length == 0)
-    		$message_new = "Please enter a valid password"
-    		redirect '/'
-    	elsif (params[:pwd1] != params[:pwd2])
-    		$message_new = "Passwords don't match"
-    		redirect '/'
-    	else
-	    	@user = User.createNew(params[:fname], params[:lname], params[:email], params[:pwd1])
-	    	if (@user.nil?)
-	    		$message_new = "A user with this e-mail already exists. Please try again."
-	    		redirect '/'
-	    	else
-	    		erb :userpage
-	    	end
-	    end
-
+    get('/users/:id') do
+    	@current_user_name = User.find(current_user).name
+    	@user = User.find(params[:id])
+    	erb :userpage
     end
 
+    post('/users/login') do
+    	user_id = User.login(params)
+    	if (user_id == nil)
+    		@errors = []
+    		@error = "Login failed."
+    		erb :homepage
+    	else
+    		session[:user_id] = user_id
+	   		redirect "/users/#{current_user}"
+	   	end
+    end
+
+    post('/users/new') do
+  		@errors = User.validate(params)
+  		if (@errors.any?)
+  			erb :homepage
+  		else
+				user_id = User.createNew(params)
+	   		session[:user_id] = user_id
+	   		redirect "/users/#{current_user}"
+    	end
+    end
 
 	end
 

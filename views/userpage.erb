@@ -1,1 +1,87 @@
-<h1><%= @user.fname %> <%= @user.lname %></h1>
+<div class="header">
+	<h2>Jake's FORUM</h2>
+</div>
+
+<% if (current_user == @user.id) %>
+
+	<div class="user_profile_box">
+		<h2 id="profile_caption">User Profile</h2>
+		<img id="profile_picture" src="<%= @user.image %>"/>
+
+		<form class="profileform" action="/users" method="post">
+			<label class="profile_label" for "fname">First Name:</label>
+			<input class="profile_field" type="text" name="fname" value="<%= @user.fname %>"/>
+			<label class="profile_label" for "lname">Last Name:</label>
+			<input class="profile_field" type="text" name="lname" value="<%= @user.lname %>"/>
+			<label class="profile_label" for "gender">Gender:</label>
+			<select class="profile_field" name="gender">
+				<% if (@user.gender == 'm') %>
+			  	<option value="m" selected>Male</option> 
+			  	<option value="f">Female</option>
+			  <% elsif (@user.gender == 'f') %>
+			  	<option value="m">Male</option> 
+			  	<option value="f" selected>Female</option>
+			  <% else %>
+			  	<option value="" selected>SELECT</option> 
+			  	<option value="m">Male</option> 
+			  	<option value="f">Female</option>
+			  <% end %>
+			</select>
+			<label class="profile_label" for "phone">Phone:</label>
+			<input class="profile_field" type="text" name="password" value="<%= @user.phone %>"/>
+			<label class="profile_label" for "password">Password:</label>
+			<input class="profile_field" type="password" name="password"/>
+			<label class="profile_label_long" for "email">E-mail:</label>
+			<input class="profile_field_long" type="text" name="email" value="<%= @user.email %>"/>
+			<label class="profile_label_long" for "image">Image URL:</label>
+			<input class="profile_field_long" type="text" name="image" value="<%= @user.image %>"/>
+			<label class="profile_label_long" for "show_location">Post Location? :</label>
+			<% if (@user.show_location == 't') %>
+				<input class="profile_field_long" type="checkbox" name="show_location" checked/>
+			<% else %>
+				<input class="profile_field_long" type="checkbox" name="show_location"/>
+			<% end %>
+			<label class="profile_label_long" for "get_notifications">Notifications? :</label>
+			<select class="profile_field" name="get_notifications">
+				<% if (@user.get_notifications == 'email') %>
+					<option value="none">NONE</option>
+			  	<option value="email" selected>Email</option> 
+			  	<option value="text">Text Message</option>
+				<% elsif (@user.get_notifications == 'text') %>
+					<option value="none">NONE</option>
+			  	<option value="email">Email</option> 
+			  	<option value="text" selected>Text Message</option>
+			  <% else %>
+			  	<option value="none" selected>NONE</option>
+			  	<option value="email">Email</option> 
+			  	<option value="text">Text Message</option>
+			  <% end %>
+			</select>
+			<input type="hidden" name="_method" value="patch"/>
+			<input class="profile_submit" type="submit" value="Update My Profile"/>
+		</form>
+
+	</div>
+
+<% else %>
+
+	<div class="user_profile_box">
+		<h2 id="profile_caption">User Profile</h2>
+		<img id="profile_picture" src="<%= @user.image %>"/>
+		<h3>Name: <%= @user.fname %> <%= @user.lname %></h3>
+		<h3>Gender: <%= @user.gender %></h3>
+		<h3>E-mail: <%= @user.email %></h3>
+		<h3>Phone: <%= @user.phone %></h3>
+		<h3>User since: <%= @user.signed_up_on %></h3>
+		<h3>About <%= @user.fname %>:</h3>
+		<div class="about">
+			<p><%= @user.bio %></p>
+		</div>
+	</div>
+
+<% end %>
+
+<div class="user_topics_box">
+	<h2 id="profile_caption"><%= @user.fname %>'s Topics</h2>
+
+</div>
