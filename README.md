@@ -8,6 +8,9 @@ Other users can then comment on and vote on those topics.
 
 Topics will be displayed based on popularity by default, but will also be searchable and sortable.
 
+Trello: https://trello.com/b/Kt5vh4Yu/wdi-project-2
+
+
 
 
 

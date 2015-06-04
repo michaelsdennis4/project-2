@@ -71,14 +71,19 @@ body {
 .homesubmit {
 	width: 40%;
 	height: 30px;
-	margin-top: 30px;
-	margin-bottom: 15%;
+	margin-top: 20px;
+	margin-bottom: 0;
 	margin-left: 30%;
 	margin-right: auto;
 	background-color: rgba(50, 50, 255, 1);
 	color: white;
 	border: none;
 	border-radius: 5px;
+}
+
+.homemessage {
+	text-align: center;
+	color: red;
 }
 
 

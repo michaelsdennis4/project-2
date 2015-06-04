@@ -6,9 +6,11 @@ CREATE DATABASE forum_db;
 
 CREATE TABLE users (
 	id SERIAL PRIMARY KEY,
+	fname VARCHAR NOT NULL,
+	lname VARCHAR NOT NULL,
 	email VARCHAR NOT NULL,
 	password VARCHAR NOT NULL,
-	signed_up_on DATE, NOT NULL,
+	signed_up_on DATE NOT NULL,
 	gender VARCHAR(1),
 	image VARCHAR,
 	phone VARCHAR,
