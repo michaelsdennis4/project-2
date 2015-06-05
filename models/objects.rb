@@ -19,10 +19,6 @@ module Models
 			@signed_up_on = signed_up_on
 		end
 
-		def name
-			@fname + ' ' + @lname
-		end
-
 		def self.validate(params)
 			errors = []
 			if (params[:fname].length == 0)
@@ -91,6 +87,22 @@ module Models
 			end
 		end
 
+		def name
+			@fname + ' ' + @lname
+		end
+
+		def update(params)
+			query = "UPDATE users SET fname=$1, lname=$2, email=$3, password=$4, gender=$5, image=$6,
+							phone=$7, show_location=$8, get_notifications=$9 WHERE id=$10"
+			if (params[:show_location])
+				loc = "t"
+			else
+				loc = "f"
+			end
+			qparams = [params[:fname], params[:lname], params[:email], params[:password], params[:gender],
+								params[:image], params[:phone], loc, params[:get_notifications], @id]
+			$db.exec_params(query, qparams)
+		end
 
 	end
 

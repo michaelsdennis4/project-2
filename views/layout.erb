@@ -15,8 +15,12 @@
 	<%= yield %>
 
 	<div class="footer">
-		<% if (@current_user_name) %>
-			<h5>You are currently logged in as <%= @current_user_name %></h5>
+		<% if (@current_user_name) %>	
+			<form class="logout" action="/users/login" method="post">
+				<h5>You are currently logged in as <%= @current_user_name %>
+				<input type="hidden" name="_method" value="delete"/>
+				<input id="logout_button" type="submit" value="Log Out"/>
+			</form>
 		<% end %>
 	</div>
 

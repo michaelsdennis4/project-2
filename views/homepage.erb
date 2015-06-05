@@ -9,34 +9,41 @@
 <div class="home_box">
 	<h2 class="home_label">Sign Up</h2>
 	<form class="home_form" action="/users/new" method="post">
-		<label class="home_label" for "fname">First Name:</label>
-		<input class="home_field" type="text" name="fname" placeholder="First Name"/>
-		<label class="home_label" for "lname">Last Name:</label>
-		<input class="home_field" type="text" name="lname" placeholder="Last Name"/>
-		<label class="home_label" for "email">E-mail Address:</label>
-		<input class="home_field" type="text" name="email" placeholder="E-mail Address"/>
-		<label class="home_label" for "password1">Password:</label>
-		<input class="home_field" type="password" name="pwd1" placeholder="Password"/>
-		<label class="home_label" for "password2">Repeat Password:</label>
-		<input class="home_field" type="password" name="pwd2" placeholder="Password"/>
+		<div class="home_inputs">
+			<label class="home_label" for "fname">First Name:</label>
+			<input class="home_field" type="text" name="fname" placeholder="First Name"/>
+			<label class="home_label" for "lname">Last Name:</label>
+			<input class="home_field" type="text" name="lname" placeholder="Last Name"/>
+			<label class="home_label" for "email">E-mail Address:</label>
+			<input class="home_field" type="text" name="email" placeholder="E-mail Address"/>
+			<label class="home_label" for "password1">Password:</label>
+			<input class="home_field" type="password" name="pwd1" placeholder="Password"/>
+			<label class="home_label" for "password2">Repeat Password:</label>
+			<input class="home_field" type="password" name="pwd2" placeholder="Password"/>
+		</div>
 		<input class="home_submit" type="submit" value="Sign Me Up!"/>
 	</form>
 	<% if (@errors.any?) %>
-		<% @errors.each do |error| %>
-			<h3 class="home_message"><%= error %></h3>
-		<% end %>
+		<h3 class="home_message"><%= @errors[0] %></h3>
 	<% end %>
+	<%# <% if (@errors.any?) %>
+	<%#	<% @errors.each do |error| %>
+	<%#		<h5 class="home_message"><%= error %><%#</h3>
+	<%#	<% end %>
+	<%# <% end %>
 </div>
 
 <!-- user login -->
 <div class="home_box">
 	<h2 class="home_label">Login</h2>
 	<form class="home_form" action="/users/login" method="post">
-		<label class="home_label" for "email">E-mail Address:</label>
-		<input class="home_field" type="text" name="email" placeholder="E-mail Address"/>
-		<label class="home_label" for "password">Password:</label>
-		<input class="home_field" type="password" name="password" placeholder="Password"/>
+		<div class="home_inputs">
+			<label class="home_label" for "email">E-mail Address:</label>
+			<input class="home_field" type="text" name="email" placeholder="E-mail Address"/>
+			<label class="home_label" for "password">Password:</label>
+			<input class="home_field" type="password" name="password" placeholder="Password"/>
+		</div>
 		<input class="home_submit" type="submit" value="Login"/>
 	</form>
-	<h3 class="home_message"><%= @message_login %></h3>
+	<h3 class="home_message"><%= @error %></h3>
 </div>

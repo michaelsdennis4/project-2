@@ -8,7 +8,7 @@
 		<h2 id="profile_caption">User Profile</h2>
 		<img id="profile_picture" src="<%= @user.image %>"/>
 
-		<form class="profileform" action="/users" method="post">
+		<form class="profileform" action="/users/<%= @user.id %>" method="post">
 			<label class="profile_label" for "fname">First Name:</label>
 			<input class="profile_field" type="text" name="fname" value="<%= @user.fname %>"/>
 			<label class="profile_label" for "lname">Last Name:</label>
@@ -28,18 +28,18 @@
 			  <% end %>
 			</select>
 			<label class="profile_label" for "phone">Phone:</label>
-			<input class="profile_field" type="text" name="password" value="<%= @user.phone %>"/>
+			<input class="profile_field" type="text" name="phone" value="<%= @user.phone %>"/>
 			<label class="profile_label" for "password">Password:</label>
-			<input class="profile_field" type="password" name="password"/>
+			<input class="profile_field" type="password" name="password" value="<%= @user.password %>"/>
 			<label class="profile_label_long" for "email">E-mail:</label>
 			<input class="profile_field_long" type="text" name="email" value="<%= @user.email %>"/>
 			<label class="profile_label_long" for "image">Image URL:</label>
 			<input class="profile_field_long" type="text" name="image" value="<%= @user.image %>"/>
 			<label class="profile_label_long" for "show_location">Post Location? :</label>
 			<% if (@user.show_location == 't') %>
-				<input class="profile_field_long" type="checkbox" name="show_location" checked/>
+				<input class="profile_field_long" type="checkbox" name="show_location" value="t" checked/>
 			<% else %>
-				<input class="profile_field_long" type="checkbox" name="show_location"/>
+				<input class="profile_field_long" type="checkbox" name="show_location" value="f"/>
 			<% end %>
 			<label class="profile_label_long" for "get_notifications">Notifications? :</label>
 			<select class="profile_field" name="get_notifications">

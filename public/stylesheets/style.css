@@ -18,7 +18,6 @@ body {
 .footer {
 	width: 100%;
 	height: 50px;
-	line-height: 5px;
 	margin: none;
 	position: absolute;
 	bottom: 0;
@@ -27,6 +26,20 @@ body {
 	text-align: center;
 }
 
+.logout {
+	height: 50px;
+	margin-top: -5px;
+}
+
+#logout_button {
+	margin-left: 10px;
+	width: 80px;
+	line-height: 15px;
+	background-color: white;
+	border: solid black 1px;
+	border-radius: 5px;
+	color: rgba(50, 50, 255, 1);
+}
 
 
 /*HOMEPAGE*/
@@ -55,6 +68,10 @@ body {
 	text-align: center;
 	color: black;
 	padding: 10px;
+}
+
+.home_inputs {
+	height: 310px;
 }
 
 
@@ -98,8 +115,10 @@ body {
 
 .home_message {
 	text-align: center;
+	margin-bottom: 10px;
 	color: red;
 }
+
 
 /*USER PAGE*/
 
@@ -199,8 +218,6 @@ body {
 	border-radius: 5px;
 	padding-left: 5px;
 }
-
-
 
 .profile_submit {
 	width: 40%;

@@ -37,12 +37,17 @@ module Forum
     	user_id = User.login(params)
     	if (user_id == nil)
     		@errors = []
-    		@error = "Login failed."
+    		@error = "Login failed. Try again."
     		erb :homepage
     	else
     		session[:user_id] = user_id
 	   		redirect "/users/#{current_user}"
 	   	end
+    end
+
+    delete('/users/login') do
+      session[:user_id] = nil
+      redirect '/'
     end
 
     post('/users/new') do
@@ -54,6 +59,12 @@ module Forum
 	   		session[:user_id] = user_id
 	   		redirect "/users/#{current_user}"
     	end
+    end
+
+    patch('/users/:id') do
+      @user = User.find(params[:id])
+      @user.update(params)
+      redirect "/users/#{@user.id}"
     end
 
 	end
