@@ -8,7 +8,7 @@
 <% if (@topic == nil) %>
 
 	<div class="topic_detail">
-		<h2 id="box_caption">New Topic for <%= @current_user_name %></h2>
+		<h2 id="box_caption">What's on your mind, <%= @current_user_name %>?</h2>
 		<form class="enter_topic" action="/topics/new" method="post">
 			<label class="enter_topic_label" for="subject">Subject:</label>
 			<input class="enter_topic_field" type="text" name="subject" placeholder="Enter your subject..."/>
@@ -37,8 +37,30 @@
 	<div class="topic_detail">
 		<h2 id="box_caption"><%= @topic.subject %></h2>
 		<h3 class="td_caption">Created by: <%= @topic.owner_name %></h3>
-		<h3 class="td_caption">Location: <%= @topic.user_location %></h3>
 		<h3 class="td_caption">Created on: <%= @topic.created_on %></h3>
+			<form class="vote" action="/votes/<%= @topic.id %>" method="post">
+			<label for="score">Do you like this topic?</label>
+			<select id="vote" name="score" onchange="this.form.submit()">
+				<% if (@vote == nil) %>
+					<option value="" selected>VOTE</option>
+					<option value="1">1 star</option>
+					<option value="2">2 stars</option>
+					<option value="3">3 stars</option>
+					<option value="4">4 stars</option>
+					<option value="5">5 stars</option> 
+				<% else %>
+					<option value="">VOTE</option>
+				  <option value="1" <% if (@vote.score.to_i == 1) %> selected <% end %>>1 star</option> 
+				  <option value="2" <% if (@vote.score.to_i == 2) %> selected <% end %>>2 stars</option>
+				  <option value="3" <% if (@vote.score.to_i == 3) %> selected <% end %>>3 stars</option>
+				  <option value="4" <% if (@vote.score.to_i == 4) %> selected <% end %>>4 stars</option>
+				  <option value="5" <% if (@vote.score.to_i == 5) %> selected <% end %>>5 stars</option>
+			  <% end %>
+			  <!-- <input id="submit_vote" type="submit" value="Vote!"/> -->
+			</select>
+		</form>
+		<h3 class="td_caption">Location: <%= @topic.user_location %></h3>
+
 		<div class="topic_details_box">
 			<%= @topic.details_md %>
 		</div>

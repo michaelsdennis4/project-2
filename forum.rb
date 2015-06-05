@@ -91,6 +91,7 @@ module Forum
       @current_user_name = User.find(current_user).name
       @topic = Topic.find(params[:id])
       @comments = Comment.findByTopic(params[:id])
+      @vote = Vote.find(current_user, params[:id])
       erb :topicpage
     end
 
@@ -102,6 +103,16 @@ module Forum
 
     post('/comments/new/:topic_id') do
       Comment.createNew(params, current_user)
+      redirect "/topics/#{params[:topic_id]}"
+    end
+
+    post('/votes/:topic_id') do
+      vote = Vote.find(current_user, params[:topic_id])
+      if (vote)
+        vote.update(params[:score])
+      else
+        Vote.createNew(params, current_user)
+      end
       redirect "/topics/#{params[:topic_id]}"
     end
 

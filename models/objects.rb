@@ -139,6 +139,7 @@ module Models
 			@details = details
 			@details_md = markdown.render(details)
 			@created_on = created_on
+			@user_location = ""
 		end
 
 		def self.createNew(params, user_id)
@@ -165,7 +166,7 @@ module Models
 
 		def self.findAll
 			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
-							INNER JOIN users ON users.id = topics.owner_id"
+							INNER JOIN users ON users.id = topics.owner_id ORDER BY topics.created_on DESC"
 			results = $db.exec(query)
 			topics = []
 			results.each do |topic|
@@ -178,7 +179,8 @@ module Models
 
 		def self.findByUser(user_id)
 			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
-							INNER JOIN users ON users.id = topics.owner_id WHERE users.id=$1"
+							INNER JOIN users ON users.id = topics.owner_id WHERE users.id=$1
+							ORDER BY topics.created_on DESC"
 			results = $db.exec_params(query, [user_id])
 			topics = []
 			results.each do |topic|
@@ -203,13 +205,13 @@ module Models
 		attr_reader :id, :created_on, :owner_id, :topic_id
 		attr_accessor :user_location, :owner_name, :details
 
-		def initialize(id, owner_id, topic_id, details, user_location, created_on)
+		def initialize(id, owner_id, topic_id, details, created_on, user_location)
 			@id = id
 			@owner_id = owner_id
 			@topic_id = topic_id
 			@details = details
-			@user_location = user_location
 			@created_on = created_on
+			@user_location = user_location
 		end
 
 		def self.createNew(params, user_id)
@@ -222,13 +224,13 @@ module Models
 
 		def self.find(id)
 			query = "SELECT comments.*, users.fname AS fname, users.lname AS lname FROM topics
-							JOIN users ON users.id = topics.owner_id WHERE comments.id=$1"
+							INNER JOIN users ON users.id = topics.owner_id WHERE comments.id=$1"
 			result = $db.exec_params(query, [id.to_i])
 			comment = result.first
 			if (comment == nil)
 				nil
 			else
-				commentObject = comment.new(comment['id'], comment['owner_id'], comment['topic_id'], comment['details'], comment['user_location'], comment['created_on'])
+				commentObject = comment.new(comment['id'], comment['owner_id'], comment['topic_id'], comment['details'], comment['created_on'], comment['user_location'])
 				commentObject.owner_name = comment['fname'] + ' ' + comment['lname']
 				commentObject
 			end
@@ -236,9 +238,9 @@ module Models
 
 		def self.findByTopic(topic_id)
 			query = "SELECT comments.*, users.fname AS fname, users.lname AS lname FROM comments
-							JOIN users ON users.id = comments.owner_id 
-							JOIN topics ON topics.id = comments.topic_id
-							WHERE topics.id=$1"
+							INNER JOIN users ON users.id = comments.owner_id 
+							INNER JOIN topics ON topics.id = comments.topic_id
+							WHERE topics.id=$1 ORDER BY comments.created_on DESC"
 			results = $db.exec_params(query, [topic_id])
 			comments = []
 			results.each do |comment|
@@ -247,6 +249,45 @@ module Models
 				comments.push(commentObject)
 			end
 			comments
+		end
+
+	end
+
+	class Vote
+
+		attr_reader :id, :owner_id, :topic_id
+		attr_accessor :score
+
+		def initialize(id, owner_id, topic_id, score)
+			@id = id
+			@owner_id = owner_id
+			@topic_id = topic_id
+			@score = score
+		end
+
+		def self.createNew(params, user_id)
+			query = "INSERT INTO votes (owner_id, topic_id, score)
+							VALUES ($1, $2, $3)"
+			qparams = [user_id, params[:topic_id], params[:score]]
+			$db.exec_params(query, qparams)
+		end
+
+		def self.find(user_id, topic_id)
+			query = "SELECT * FROM votes WHERE owner_id=$1 AND topic_id=$2"
+			qparams = [user_id, topic_id]
+			result = $db.exec_params(query, qparams)
+			vote = result.first
+			if (vote == nil)
+				nil
+			else
+				voteObject = Vote.new(vote['id'], vote['owner_id'], vote['topic_id'], vote['score'])
+			end
+		end
+
+		def update(score)
+			query = "UPDATE votes SET score=$1 WHERE owner_id=$2 AND topic_id=$3"
+			qparams = [score, @owner_id, @topic_id]
+			$db.exec_params(query, qparams)
 		end
 
 	end
