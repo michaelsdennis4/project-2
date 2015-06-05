@@ -69,7 +69,7 @@
 <% else %>
 
 	<div class="user_profile_box">
-		<h2 id="box_caption">User Profile</h2>
+		<h2 id="box_caption"><%= @user.fname %>'s Profile</h2>
 		<img id="profile_picture" src="<%= @user.image %>"/>
 		<h3>Name: <%= @user.fname %> <%= @user.lname %></h3>
 		<h3>Gender: <%= @user.gender %></h3>
@@ -84,7 +84,20 @@
 
 <% end %>
 
-<div class="user_topics_box">
+<!-- <div class="user_topics_box">
 	<h2 id="box_caption"><%= @user.fname %>'s Topics</h2>
 
+</div> -->
+
+<div class="user_topics_box">
+	<h2 id="box_caption"><%= @user.fname %>'s Topics</h2>
+		<% @topics.each do |topic| %>
+			<div class="topic">
+				<h4 class="topic_text"><a href="/topics/<%= topic.id %>"><%= topic.subject %></a></h4>
+				<h5 class="topic_text">Created by: <%= topic.owner_name %> | Created on: <%= topic.created_on %>  | Location: <%= topic.user_location %> </h5> 
+				<h5 class="topic_text">Comments: 10   |  Votes: 10   </h5>
+			</div>
+		<% end %>
 </div>
+
+

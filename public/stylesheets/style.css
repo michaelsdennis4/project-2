@@ -80,7 +80,8 @@ body {
 	margin-top: 150px;
 	margin-left: 11%;
 	margin-right: 11%;
-	background-color: white;
+	/*background-color: white;*/
+	background-color: rgba(50, 50, 255, 0.1);
 	text-align: center;
 	color: black;
 	padding: 10px;
@@ -150,15 +151,24 @@ body {
 	text-align: left;
 	color: black;
 	padding: 10px;
+	overflow: scroll;
 }
 
 .topic {
 	float: left;
 	width: 95%;
 	height: 80px;
-	background-color: rgba(50, 50, 255, 0.2);
+	background-color: rgba(50, 50, 255, 0.1);
 	border: none;
 	border-radius: 10px;
+	margin-bottom: 10px;
+}
+
+.topic_text {
+	text-align: left;
+	margin-top: 5px;
+	margin-left: 10px;
+	margin-bottom: 0;
 }
 
 .users_list {
@@ -174,13 +184,14 @@ body {
 	text-align: left;
 	color: black;
 	padding: 10px;
+	overflow: scroll;
 }
 
 .user {
 	float: left;
 	width: 95%;
 	height: 80px;
-	background-color: rgba(50, 50, 255, 0.2);
+	background-color: rgba(50, 50, 255, 0.1);
 	border: none;
 	border-radius: 10px;
 	margin-bottom: 10px;
@@ -208,7 +219,8 @@ body {
 	border-radius: 10px;
 	margin-top: 100px;
 	margin-left: 40px;
-	background-color: white;
+	/*background-color: white;*/
+	background-color: rgba(50, 50, 255, 0.1);
 	text-align: left;
 	color: black;
 	padding: 10px;
@@ -227,6 +239,7 @@ body {
 	text-align: left;
 	color: black;
 	padding: 10px;
+	overflow: scroll;
 }
 
 .enter_topic {
@@ -279,6 +292,99 @@ body {
 	border-radius: 5px;
 }
 
+.td_caption {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.topic_details_box {
+	width: 97%;
+	height: 320px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border: solid black 1px;
+	border-radius: 10px;
+	padding: 10px;
+}
+
+#add_comment_caption {
+	margin-bottom: 10px;
+}
+
+.add_comment {
+	width: 90%;
+	height: 150px;
+	text-align: left;
+	border: solid 1px;
+	border-color: rgba(50, 50, 255, 1);
+	border-radius: 10px;
+	background-color: rgba(50, 50, 255, 0.1);
+	margin-top: 0;
+	margin-bottom: 10px;
+	padding: 10px;
+}
+
+.enter_comment_label {
+	width: 90%;
+	height: 20px;
+	text-align: left;
+	margin-left: 5px;
+	margin-bottom: 10px;
+}
+
+.enter_comment_detail {
+	width: 95%;
+	height: 90px;
+	text-align: left;
+	border: solid 1px;
+	border-radius: 5px;
+	/*border-color: rgba(50, 50, 255, 1);*/
+	border-color: black;
+	margin-top: 5px;
+	margin-left: 5px;
+	margin-bottom: 5px;
+}
+
+.comment_submit {
+	width: 160px;
+	height: 20px;
+	font-size: 12px;
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 150px;
+	margin-right: auto;
+	background-color: rgba(50, 50, 255, 1);
+	color: white;
+	border: none;
+	border-radius: 5px;
+}
+
+.comment {
+	width: 90%;
+	height: 100px;
+	text-align: left;
+	border: solid 1px;
+	border-color: rgba(50, 50, 255, 1);
+	border-radius: 10px;
+	background-color: rgba(50, 50, 255, 0.1);
+	margin-top: 0;
+	margin-bottom: 10px;
+	padding: 10px;
+	overflow: scroll;
+}
+
+.comment_text {
+	margin-top: 0;
+	margin-bottom: 5px;
+	font-size: 12px;
+	text-align: left;
+	color: black;
+}
+
+
+
+
+
 /*USER PAGE*/
 
 .user_profile_box {
@@ -290,7 +396,8 @@ body {
 	border-radius: 10px;
 	margin-top: 100px;
 	margin-left: 40px;
-	background-color: white;
+	/*background-color: white;*/
+	background-color: rgba(50, 50, 255, 0.1);
 	text-align: left;
 	color: black;
 	padding: 10px;
@@ -309,6 +416,7 @@ body {
 	text-align: center;
 	color: black;
 	padding: 10px;
+	overflow: scroll;
 }
 
 #profile_picture {

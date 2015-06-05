@@ -7,8 +7,8 @@
 
 <% if (@topic == nil) %>
 
-<div class="topic_detail">
-	<h2 id="box_caption">New Topic for <%= @current_user_name %></h2>
+	<div class="topic_detail">
+		<h2 id="box_caption">New Topic for <%= @current_user_name %></h2>
 		<form class="enter_topic" action="/topics/new" method="post">
 			<label class="enter_topic_label" for="subject">Subject:</label>
 			<input class="enter_topic_field" type="text" name="subject" placeholder="Enter your subject..."/>
@@ -16,31 +16,53 @@
 			<textarea class="enter_topic_detail" name="details" placeholder="What do you have to say today?..."></textarea>
 			<input class="topic_submit" type="submit" value="Create Topic"/>
 		</form>
-</div>
+	</div>
+ 
+<% elsif (current_user == @topic.owner_id) %>
+
+	<div class="topic_detail">
+		<h2 id="box_caption">Edit Topic for <%= @current_user_name %></h2>
+		<form class="enter_topic" action="/topics/<%= @topic.id %>" method="post">
+			<label class="enter_topic_label" for="subject">Subject:</label>
+			<input class="enter_topic_field" type="text" name="subject" value="<%= @topic.subject %>"/>
+			<label class="enter_topic_label" for="details">Details:</label>
+			<textarea class="enter_topic_detail" name="details"><%= @topic.details %></textarea>
+			<input type="hidden" name="_method" value="patch"/>
+			<input class="topic_submit" type="submit" value="Update Topic"/>
+		</form>
+	</div>
 
 <% else %>
 
-<div class="topic_detail">
-	<h2 id="box_caption"><%= @topic.subject %></h2>
-		<div class="topic_text">
-
+	<div class="topic_detail">
+		<h2 id="box_caption"><%= @topic.subject %></h2>
+		<h3 class="td_caption">Created by: <%= @topic.owner_name %></h3>
+		<h3 class="td_caption">Location: <%= @topic.user_location %></h3>
+		<h3 class="td_caption">Created on: <%= @topic.created_on %></h3>
+		<div class="topic_details_box">
+			<%= @topic.details_md %>
 		</div>
-
-</div>
-
-
-
+	</div>
 
 <% end %>
 
+
 <div class="comments_list">
 	<h2 id="box_caption">Comments</h2>
-
-		<%# <% @users.each do |user| %>
-			<div class="comment">
-				
-			</div>
-		<%# <% end %>
-
+	<% if (@topic != nil) %>
+		<form class="add_comment" action="/comments/new/<%= @topic.id %>" method="post">
+			<label class="enter_comment_label" for="details">Add a Comment:</label>
+			<textarea class="enter_comment_detail" name="details" placeholder="Go ahead, enter your comment..."></textarea>
+			<input class="comment_submit" type="submit" value="Add Comment"/>
+		</form>
+		<% @comments.each do |comment| %>
+				<div class="comment">
+					<h5 class="comment_text">Created by: <%= comment.owner_name %> | Created on: <%= comment.created_on %></h5>
+					<hr>
+					<p class="comment_text"><%= comment.details %><p>
+				</div>
+		<% end %>
+	<% end %>
 
 </div>
+

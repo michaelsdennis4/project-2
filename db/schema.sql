@@ -19,10 +19,19 @@
 -- 	bio: TEXT
 -- );
 
-CREATE TABLE topics (
+-- CREATE TABLE topics (
+-- 	id SERIAL PRIMARY KEY,
+-- 	subject VARCHAR NOT NULL,
+-- 	owner_id INTEGER NOT NULL REFERENCES users(id),
+-- 	created_on DATE NOT NULL,
+-- 	details TEXT,
+-- 	user_location VARCHAR
+-- );
+
+CREATE TABLE comments (
 	id SERIAL PRIMARY KEY,
-	subject VARCHAR NOT NULL,
 	owner_id INTEGER NOT NULL REFERENCES users(id),
+	topic_id INTEGER NOT NULL REFERENCES topics(id),
 	created_on DATE NOT NULL,
 	details TEXT,
 	user_location VARCHAR

@@ -8,10 +8,13 @@
 
 <div class="topics_list">
 	<h2 id="box_caption">Topics</h2>
-		<div class="topic">
-
-		</div>
-
+		<% @topics.each do |topic| %>
+			<div class="topic">
+				<h4 class="topic_text"><a href="/topics/<%= topic.id %>"><%= topic.subject %></a></h4>
+				<h5 class="topic_text">Created by: <%= topic.owner_name %> | Created on: <%= topic.created_on %>  | Location: <%= topic.user_location %> </h5> 
+				<h5 class="topic_text">Comments: 10   |  Votes: 10   </h5>
+			</div>
+		<% end %>
 </div>
 
 <div class="users_list">
@@ -22,8 +25,6 @@
 				<h5 id="user_text"><a href="/users/<%= user.id %>"><%= user.fname %> <%= user.lname %></a></h5>
 			</div>
 		<% end %>
-
-
 </div>
 
 

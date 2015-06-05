@@ -30,6 +30,7 @@ module Forum
     get('/users/:id') do
     	@current_user_name = User.find(current_user).name
     	@user = User.find(params[:id])
+      @topics = Topic.findByUser(params[:id])
     	erb :userpage
     end
 
@@ -70,8 +71,8 @@ module Forum
 
     get('/hub') do
       @current_user_name = User.find(current_user).name
-      # get users
       @users = User.findAll
+      @topics = Topic.findAll
       erb :hub
     end
 
@@ -89,7 +90,19 @@ module Forum
     get('/topics/:id') do
       @current_user_name = User.find(current_user).name
       @topic = Topic.find(params[:id])
+      @comments = Comment.findByTopic(params[:id])
       erb :topicpage
+    end
+
+    patch('/topics/:id') do
+      @topic = Topic.find(params[:id])
+      @topic.update(params)
+      redirect "/topics/#{@topic.id}"
+    end
+
+    post('/comments/new/:topic_id') do
+      Comment.createNew(params, current_user)
+      redirect "/topics/#{params[:topic_id]}"
     end
 
 	end

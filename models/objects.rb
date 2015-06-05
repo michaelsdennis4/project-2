@@ -1,4 +1,5 @@
 require "pry"
+require "redcarpet"
 require_relative "../db/connection"
 
 module Models
@@ -6,8 +7,7 @@ module Models
 	class User 
 
 		attr_reader :id, :signed_up_on
-
-		attr_accessor :fname, :lname, :email, :password, :gender, :image,
+	  attr_accessor :fname, :lname, :email, :password, :gender, :image,
 									:phone, :show_location, :get_notifications, :bio
 
 		def initialize(id, fname, lname, email, password, signed_up_on)
@@ -126,15 +126,18 @@ module Models
 
 	class Topic
 
-		attr_reader :id, :created_on
+		include Redcarpet
 
-		attr_accessor :subject, :owner_id, :details, :user_location
+		attr_reader :id, :created_on, :owner_id
+		attr_accessor :subject, :owner_name, :details, :details_md, :user_location
 
 		def initialize(id, owner_id, subject, details, created_on, user_location)
 			@id = id
 			@owner_id = owner_id
 			@subject = subject
+			markdown = Markdown.new(Redcarpet::Render::HTML, extensions = {})
 			@details = details
+			@details_md = markdown.render(details)
 			@created_on = created_on
 		end
 
@@ -147,19 +150,105 @@ module Models
 		end
 
 		def self.find(id)
-			query = "SELECT * FROM topics WHERE id=$1"
+			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
+							JOIN users ON users.id = topics.owner_id WHERE topics.id=$1"
 			result = $db.exec_params(query, [id.to_i])
 			topic = result.first
 			if (topic == nil)
 				nil
 			else
-				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'],
-								topic['created_on'], topic['topic_location'])
+				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['topic_location'])
+				topicObject.owner_name = topic['fname'] + ' ' + topic['lname']
+				topicObject
 			end
+		end
+
+		def self.findAll
+			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
+							INNER JOIN users ON users.id = topics.owner_id"
+			results = $db.exec(query)
+			topics = []
+			results.each do |topic|
+				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['topic_location'])
+				topicObject.owner_name = topic['fname'] + ' ' + topic['lname']
+				topics.push(topicObject)
+			end
+			topics
+		end
+
+		def self.findByUser(user_id)
+			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
+							INNER JOIN users ON users.id = topics.owner_id WHERE users.id=$1"
+			results = $db.exec_params(query, [user_id])
+			topics = []
+			results.each do |topic|
+				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['topic_location'])
+				topicObject.owner_name = topic['fname'] + ' ' + topic['lname']
+				topics.push(topicObject)
+			end
+			topics
+		end
+
+		def update(params)
+			query = "UPDATE topics SET subject=$1, details=$2 WHERE id=$3"
+			qparams = [params[:subject], params[:details], @id]
+			$db.exec_params(query, qparams)
 		end
 
 
 	end
 
+	class Comment
+
+		attr_reader :id, :created_on, :owner_id, :topic_id
+		attr_accessor :user_location, :owner_name, :details
+
+		def initialize(id, owner_id, topic_id, details, user_location, created_on)
+			@id = id
+			@owner_id = owner_id
+			@topic_id = topic_id
+			@details = details
+			@user_location = user_location
+			@created_on = created_on
+		end
+
+		def self.createNew(params, user_id)
+			query = "INSERT INTO comments (owner_id, topic_id, details, created_on, user_location)
+							VALUES ($1, $2, $3, CURRENT_TIMESTAMP, 'unknown') RETURNING id";
+			qparams = [user_id, params[:topic_id], params[:details]]
+			result = $db.exec_params(query, qparams)
+			comment_id = result.entries.first['id']
+		end
+
+		def self.find(id)
+			query = "SELECT comments.*, users.fname AS fname, users.lname AS lname FROM topics
+							JOIN users ON users.id = topics.owner_id WHERE comments.id=$1"
+			result = $db.exec_params(query, [id.to_i])
+			comment = result.first
+			if (comment == nil)
+				nil
+			else
+				commentObject = comment.new(comment['id'], comment['owner_id'], comment['topic_id'], comment['details'], comment['user_location'], comment['created_on'])
+				commentObject.owner_name = comment['fname'] + ' ' + comment['lname']
+				commentObject
+			end
+		end
+
+		def self.findByTopic(topic_id)
+			query = "SELECT comments.*, users.fname AS fname, users.lname AS lname FROM comments
+							JOIN users ON users.id = comments.owner_id 
+							JOIN topics ON topics.id = comments.topic_id
+							WHERE topics.id=$1"
+			results = $db.exec_params(query, [topic_id])
+			comments = []
+			results.each do |comment|
+				commentObject = Comment.new(comment['id'], comment['owner_id'], comment['details'], comment['details'], comment['created_on'], comment['user_location'])
+				commentObject.owner_name = comment['fname'] + ' ' + comment['lname']
+				comments.push(commentObject)
+			end
+			comments
+		end
+
+	end
 
 end
