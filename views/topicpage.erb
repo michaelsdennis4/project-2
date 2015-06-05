@@ -72,17 +72,30 @@
 <div class="comments_list">
 	<h2 id="box_caption">Comments</h2>
 	<% if (@topic != nil) %>
+		<!-- new comment -->
 		<form class="add_comment" action="/comments/new/<%= @topic.id %>" method="post">
 			<label class="enter_comment_label" for="details">Add a Comment:</label>
 			<textarea class="enter_comment_detail" name="details" placeholder="Go ahead, enter your comment..."></textarea>
 			<input class="comment_submit" type="submit" value="Add Comment"/>
 		</form>
+		<!-- comment list -->
 		<% @comments.each do |comment| %>
+			<% if (comment.owner_id == current_user) %>
+				<div class="add_comment">
+					<h5 class="comment_text">Created by: <%= comment.owner_name %> | Created on: <%= comment.created_on %></h5>
+					<form action="/comment/:id" method="post">
+						<textarea class="enter_comment_detail" name="details" placeholder="Go ahead, enter your comment..."><%= comment.details %></textarea>
+						<input type="hidden" name="_method" value="patch"/>
+						<input class="comment_submit" type="submit" value="Update Comment"/>
+					</form>
+				</div>
+			<% else %>
 				<div class="comment">
 					<h5 class="comment_text">Created by: <%= comment.owner_name %> | Created on: <%= comment.created_on %></h5>
 					<hr>
 					<p class="comment_text"><%= comment.details %><p>
 				</div>
+			<% end %>
 		<% end %>
 	<% end %>
 
