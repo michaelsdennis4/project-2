@@ -1,0 +1,30 @@
+<div class="header">
+	<h2>Jake's FORUM</h2>
+</div>
+<div class="links">
+	<a href="/users/<%= current_user %>">My Profile</a> | 
+	<a href="/topics/new">Create New Topic</a>
+</div>
+
+<div class="topics_list">
+	<h2 id="box_caption">Topics</h2>
+		<div class="topic">
+
+		</div>
+
+</div>
+
+<div class="users_list">
+	<h2 id="box_caption">Users</h2>
+		<% @users.each do |user| %>
+			<div class="user">
+				<img id="user_image" src="<%= user.image %>"/>
+				<h5 id="user_text"><a href="/users/<%= user.id %>"><%= user.fname %> <%= user.lname %></a></h5>
+			</div>
+		<% end %>
+
+
+</div>
+
+
+

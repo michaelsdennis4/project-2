@@ -1,0 +1,46 @@
+<div class="header">
+	<h2>Jake's FORUM</h2>
+</div>
+<div class="links">
+	<a href="/hub">Forum</a> | <a href="/users/<%= current_user %>">My Profile</a> |  <a href="/topics/new">Create New Topic</a>
+</div>
+
+<% if (@topic == nil) %>
+
+<div class="topic_detail">
+	<h2 id="box_caption">New Topic for <%= @current_user_name %></h2>
+		<form class="enter_topic" action="/topics/new" method="post">
+			<label class="enter_topic_label" for="subject">Subject:</label>
+			<input class="enter_topic_field" type="text" name="subject" placeholder="Enter your subject..."/>
+			<label class="enter_topic_label" for="details">Details:</label>
+			<textarea class="enter_topic_detail" name="details" placeholder="What do you have to say today?..."></textarea>
+			<input class="topic_submit" type="submit" value="Create Topic"/>
+		</form>
+</div>
+
+<% else %>
+
+<div class="topic_detail">
+	<h2 id="box_caption"><%= @topic.subject %></h2>
+		<div class="topic_text">
+
+		</div>
+
+</div>
+
+
+
+
+<% end %>
+
+<div class="comments_list">
+	<h2 id="box_caption">Comments</h2>
+
+		<%# <% @users.each do |user| %>
+			<div class="comment">
+				
+			</div>
+		<%# <% end %>
+
+
+</div>

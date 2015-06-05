@@ -5,9 +5,9 @@ module Models
 
 	class User 
 
-		attr_reader :id
+		attr_reader :id, :signed_up_on
 
-		attr_accessor :fname, :lname, :email, :password, :signed_up_on, :gender, :image,
+		attr_accessor :fname, :lname, :email, :password, :gender, :image,
 									:phone, :show_location, :get_notifications, :bio
 
 		def initialize(id, fname, lname, email, password, signed_up_on)
@@ -87,6 +87,24 @@ module Models
 			end
 		end
 
+		def self.findAll
+			query = "SELECT * FROM users"
+			results = $db.exec(query)
+			users = []
+			results.each do |user|
+				userObject = User.new(user['id'], user['fname'], user['lname'], user['email'],
+								user['password'], user['signed_up_on'])
+				userObject.gender = user['gender']
+				userObject.phone = user['phone']
+				userObject.image = user['image']
+				userObject.show_location = user['show_location']
+				userObject.get_notifications = user['get_notifications']
+				userObject.bio = user['bio']
+				users.push(userObject)
+			end
+			users
+		end
+
 		def name
 			@fname + ' ' + @lname
 		end
@@ -103,6 +121,43 @@ module Models
 								params[:image], params[:phone], loc, params[:get_notifications], @id]
 			$db.exec_params(query, qparams)
 		end
+
+	end
+
+	class Topic
+
+		attr_reader :id, :created_on
+
+		attr_accessor :subject, :owner_id, :details, :user_location
+
+		def initialize(id, owner_id, subject, details, created_on, user_location)
+			@id = id
+			@owner_id = owner_id
+			@subject = subject
+			@details = details
+			@created_on = created_on
+		end
+
+		def self.createNew(params, user_id)
+			query = "INSERT INTO topics (owner_id, subject, details, created_on, user_location)
+							VALUES ($1, $2, $3, CURRENT_TIMESTAMP, 'unknown') RETURNING id";
+			qparams = [user_id, params[:subject], params[:details]]
+			result = $db.exec_params(query, qparams)
+			topic_id = result.entries.first['id']
+		end
+
+		def self.find(id)
+			query = "SELECT * FROM topics WHERE id=$1"
+			result = $db.exec_params(query, [id.to_i])
+			topic = result.first
+			if (topic == nil)
+				nil
+			else
+				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'],
+								topic['created_on'], topic['topic_location'])
+			end
+		end
+
 
 	end
 

@@ -41,7 +41,8 @@ module Forum
     		erb :homepage
     	else
     		session[:user_id] = user_id
-	   		redirect "/users/#{current_user}"
+	   		# redirect "/users/#{current_user}"
+        redirect "/hub"
 	   	end
     end
 
@@ -65,6 +66,30 @@ module Forum
       @user = User.find(params[:id])
       @user.update(params)
       redirect "/users/#{@user.id}"
+    end
+
+    get('/hub') do
+      @current_user_name = User.find(current_user).name
+      # get users
+      @users = User.findAll
+      erb :hub
+    end
+
+    get('/topics/new') do
+      @current_user_name = User.find(current_user).name
+      @topic = nil
+      erb :topicpage
+    end
+
+    post('/topics/new') do
+      topic_id = Topic.createNew(params, current_user)
+      redirect "/topics/#{topic_id}"
+    end
+
+    get('/topics/:id') do
+      @current_user_name = User.find(current_user).name
+      @topic = Topic.find(params[:id])
+      erb :topicpage
     end
 
 	end

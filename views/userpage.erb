@@ -1,11 +1,14 @@
 <div class="header">
 	<h2>Jake's FORUM</h2>
 </div>
+<div class="links">
+	<a href="/hub">Forum</a> | <a href="/topics/new">Create New Topic</a>
+</div>
 
 <% if (current_user == @user.id) %>
 
 	<div class="user_profile_box">
-		<h2 id="profile_caption">User Profile</h2>
+		<h2 id="box_caption">User Profile</h2>
 		<img id="profile_picture" src="<%= @user.image %>"/>
 
 		<form class="profileform" action="/users/<%= @user.id %>" method="post">
@@ -66,7 +69,7 @@
 <% else %>
 
 	<div class="user_profile_box">
-		<h2 id="profile_caption">User Profile</h2>
+		<h2 id="box_caption">User Profile</h2>
 		<img id="profile_picture" src="<%= @user.image %>"/>
 		<h3>Name: <%= @user.fname %> <%= @user.lname %></h3>
 		<h3>Gender: <%= @user.gender %></h3>
@@ -82,6 +85,6 @@
 <% end %>
 
 <div class="user_topics_box">
-	<h2 id="profile_caption"><%= @user.fname %>'s Topics</h2>
+	<h2 id="box_caption"><%= @user.fname %>'s Topics</h2>
 
 </div>
