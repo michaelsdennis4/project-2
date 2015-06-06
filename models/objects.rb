@@ -4,6 +4,12 @@ require_relative "../db/connection"
 
 module Models
 
+	def self.getLocation(ip_address)
+		response = RestClient.get("ipinfo.io/#{ip_address}/geo")
+    data = JSON.parse(response)
+    @location = data['city'] +', '+data['region']+', '+data['country']
+	end
+
 	class User 
 
 		attr_reader :id, :signed_up_on
@@ -88,7 +94,7 @@ module Models
 		end
 
 		def self.findAll
-			query = "SELECT * FROM users"
+			query = "SELECT * FROM users ORDER BY lname, fname"
 			results = $db.exec(query)
 			users = []
 			results.each do |user|
@@ -129,7 +135,8 @@ module Models
 		include Redcarpet
 
 		attr_reader :id, :created_on, :owner_id
-		attr_accessor :subject, :owner_name, :details, :details_md, :user_location
+		attr_accessor :subject, :owner_name, :details, :details_md, :user_location, 
+									:num_comments, :total_score
 
 		def initialize(id, owner_id, subject, details, created_on, user_location)
 			@id = id
@@ -139,13 +146,14 @@ module Models
 			@details = details
 			@details_md = markdown.render(details)
 			@created_on = created_on
-			@user_location = ""
+			@user_location = user_location
 		end
 
-		def self.createNew(params, user_id)
+		def self.createNew(params, user_id, ip_address)
+			location = getLocation(ip_address)
 			query = "INSERT INTO topics (owner_id, subject, details, created_on, user_location)
-							VALUES ($1, $2, $3, CURRENT_TIMESTAMP, 'unknown') RETURNING id";
-			qparams = [user_id, params[:subject], params[:details]]
+							VALUES ($1, $2, $3, CURRENT_TIMESTAMP, $4) RETURNING id";
+			qparams = [user_id, params[:subject], params[:details], location]
 			result = $db.exec_params(query, qparams)
 			topic_id = result.entries.first['id']
 		end
@@ -158,20 +166,33 @@ module Models
 			if (topic == nil)
 				nil
 			else
-				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['topic_location'])
+				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['user_location'])
 				topicObject.owner_name = topic['fname'] + ' ' + topic['lname']
 				topicObject
 			end
 		end
 
-		def self.findAll
-			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
-							INNER JOIN users ON users.id = topics.owner_id ORDER BY topics.created_on DESC"
+		def self.findAll(sort_by)
+			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname,
+							count(comments.id) AS num_comments, sum(votes.score) AS total_score 
+							FROM topics INNER JOIN users ON users.id = topics.owner_id
+							LEFT JOIN comments ON comments.topic_id = topics.id
+							LEFT JOIN votes ON votes.topic_id = topics.id
+							GROUP BY topics.id, users.fname, users.lname"
+			if (sort_by == "recent")
+				query << " ORDER BY topics.created_on DESC"
+			elsif (sort_by == "comments")
+				query << " ORDER BY num_comments DESC"
+			elsif (sort_by == "popular")
+				query << " ORDER BY total_score DESC" 
+			end
 			results = $db.exec(query)
 			topics = []
 			results.each do |topic|
-				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['topic_location'])
+				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['user_location'])
 				topicObject.owner_name = topic['fname'] + ' ' + topic['lname']
+				topicObject.num_comments = topic['num_comments']
+				topicObject.total_score = topic['total_score']
 				topics.push(topicObject)
 			end
 			topics
@@ -223,14 +244,14 @@ module Models
 		end
 
 		def self.find(id)
-			query = "SELECT comments.*, users.fname AS fname, users.lname AS lname FROM topics
-							INNER JOIN users ON users.id = topics.owner_id WHERE comments.id=$1"
+			query = "SELECT comments.*, users.fname AS fname, users.lname AS lname FROM comments
+							INNER JOIN users ON users.id = comments.owner_id WHERE comments.id=$1"
 			result = $db.exec_params(query, [id.to_i])
 			comment = result.first
 			if (comment == nil)
 				nil
 			else
-				commentObject = comment.new(comment['id'], comment['owner_id'], comment['topic_id'], comment['details'], comment['created_on'], comment['user_location'])
+				commentObject = Comment.new(comment['id'], comment['owner_id'], comment['details'], comment['details'], comment['created_on'], comment['user_location'])
 				commentObject.owner_name = comment['fname'] + ' ' + comment['lname']
 				commentObject
 			end
@@ -249,6 +270,12 @@ module Models
 				comments.push(commentObject)
 			end
 			comments
+		end
+
+		def update(params)
+			query = "UPDATE comments SET details=$1 WHERE id=$2"
+			qparams = [params[:details], @id]
+			results = $db.exec_params(query, qparams)
 		end
 
 	end

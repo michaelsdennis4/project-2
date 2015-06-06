@@ -8,7 +8,7 @@
 <% if (current_user == @user.id) %>
 
 	<div class="user_profile_box">
-		<h2 id="box_caption">User Profile</h2>
+		<h2 id="box_caption">My Profile</h2>
 		<img id="profile_picture" src="<%= @user.image %>"/>
 
 		<form class="profileform" action="/users/<%= @user.id %>" method="post">
@@ -90,7 +90,11 @@
 </div> -->
 
 <div class="user_topics_box">
-	<h2 id="box_caption"><%= @user.fname %>'s Topics</h2>
+	<% if (current_user == @user.id) %>
+		<h2 id="box_caption">My Topics</h2>
+	<% else %>
+		<h2 id="box_caption"><%= @user.fname %>'s Topics</h2>
+	<% end %>
 		<% @topics.each do |topic| %>
 			<div class="topic">
 				<h4 class="topic_text"><a href="/topics/<%= topic.id %>"><%= topic.subject %></a></h4>

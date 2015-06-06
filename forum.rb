@@ -72,7 +72,16 @@ module Forum
     get('/hub') do
       @current_user_name = User.find(current_user).name
       @users = User.findAll
-      @topics = Topic.findAll
+      @sort = "recent" #default
+      @topics = Topic.findAll(@sort)
+      erb :hub
+    end
+
+    post('/hub') do
+      @current_user_name = User.find(current_user).name
+      @users = User.findAll
+      @sort = params[:sort]
+      @topics = Topic.findAll(@sort)
       erb :hub
     end
 
@@ -83,7 +92,7 @@ module Forum
     end
 
     post('/topics/new') do
-      topic_id = Topic.createNew(params, current_user)
+      topic_id = Topic.createNew(params, current_user, request.ip)
       redirect "/topics/#{topic_id}"
     end
 
@@ -106,6 +115,12 @@ module Forum
       redirect "/topics/#{params[:topic_id]}"
     end
 
+    patch('/comments/:id/:topic_id') do
+      comment = Comment.find(params[:id])
+      comment.update(params)
+      redirect "/topics/#{params[:topic_id]}"
+    end
+
     post('/votes/:topic_id') do
       vote = Vote.find(current_user, params[:topic_id])
       if (vote)
@@ -115,6 +130,7 @@ module Forum
       end
       redirect "/topics/#{params[:topic_id]}"
     end
+
 
 	end
 
