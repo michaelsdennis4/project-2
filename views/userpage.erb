@@ -84,10 +84,6 @@
 
 <% end %>
 
-<!-- <div class="user_topics_box">
-	<h2 id="box_caption"><%= @user.fname %>'s Topics</h2>
-
-</div> -->
 
 <div class="user_topics_box">
 	<% if (current_user == @user.id) %>
@@ -95,11 +91,21 @@
 	<% else %>
 		<h2 id="box_caption"><%= @user.fname %>'s Topics</h2>
 	<% end %>
+
+		<form class="topic_sort" action="/users/<%= @user.id %>" method="post">
+			<label for="sort">Sort Topics by:</label>
+			<select id="topic_sort" name="sort" onchange="this.form.submit()">	
+			  <option value="recent" <% if (@sort == "recent") %> selected <% end %>>Most Recent</option> 
+			  <option value="popular" <% if (@sort == "popular") %> selected <% end %>>Most Popular</option>
+			  <option value="comments" <% if (@sort == "comments") %> selected <% end %>>Most Comments</option>
+			</select>
+		</form>
+		
 		<% @topics.each do |topic| %>
 			<div class="topic">
 				<h4 class="topic_text"><a href="/topics/<%= topic.id %>"><%= topic.subject %></a></h4>
-				<h5 class="topic_text">Created by: <%= topic.owner_name %> | Created on: <%= topic.created_on %>  | Location: <%= topic.user_location %> </h5> 
-				<h5 class="topic_text">Comments: 10   |  Votes: 10   </h5>
+				<h5 class="topic_text">Created by: <%= topic.owner_name %> | Created on: <%= topic.created_on %></h5>
+					<h5 class="topic_text">Comments: <%= topic.num_comments %> | Total Stars: <%= topic.total_score %> | Location: <%= topic.user_location %></h5>
 			</div>
 		<% end %>
 </div>

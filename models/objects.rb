@@ -1,14 +1,21 @@
 require "pry"
 require "redcarpet"
+require "rest-client"
 require_relative "../db/connection"
 
-module Models
+module Methods
+
+	include RestClient
 
 	def self.getLocation(ip_address)
 		response = RestClient.get("ipinfo.io/#{ip_address}/geo")
     data = JSON.parse(response)
-    @location = data['city'] +', '+data['region']+', '+data['country']
+    @location = "#{data['city']}, #{data['region']}, #{data['country']}"
 	end
+
+end
+
+module Models
 
 	class User 
 
@@ -94,7 +101,7 @@ module Models
 		end
 
 		def self.findAll
-			query = "SELECT * FROM users ORDER BY lname, fname"
+			query = "SELECT * FROM users WHERE id > 0 ORDER BY lname, fname"
 			results = $db.exec(query)
 			users = []
 			results.each do |user|
@@ -132,7 +139,7 @@ module Models
 
 	class Topic
 
-		include Redcarpet
+		include Methods, Redcarpet
 
 		attr_reader :id, :created_on, :owner_id
 		attr_accessor :subject, :owner_name, :details, :details_md, :user_location, 
@@ -150,17 +157,30 @@ module Models
 		end
 
 		def self.createNew(params, user_id, ip_address)
-			location = getLocation(ip_address)
+			location = Methods.getLocation(ip_address)
 			query = "INSERT INTO topics (owner_id, subject, details, created_on, user_location)
 							VALUES ($1, $2, $3, CURRENT_TIMESTAMP, $4) RETURNING id";
 			qparams = [user_id, params[:subject], params[:details], location]
 			result = $db.exec_params(query, qparams)
 			topic_id = result.entries.first['id']
+			# create dummy vote object
+			query = "INSERT INTO votes (owner_id, topic_id, score)
+							VALUES ($1, $2, $3)"
+			qparams = [0, topic_id, 0]
+			$db.exec_params(query, qparams)
+			topic_id
 		end
 
 		def self.find(id)
-			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
-							JOIN users ON users.id = topics.owner_id WHERE topics.id=$1"
+			# query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
+			# 				JOIN users ON users.id = topics.owner_id WHERE topics.id=$1"
+			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname,
+							count(comments.id) AS num_comments, sum(votes.score) AS total_score 
+							FROM topics INNER JOIN users ON users.id = topics.owner_id
+							LEFT JOIN comments ON comments.topic_id = topics.id
+							LEFT JOIN votes ON votes.topic_id = topics.id
+							WHERE topics.id=$1
+							GROUP BY topics.id, users.fname, users.lname"
 			result = $db.exec_params(query, [id.to_i])
 			topic = result.first
 			if (topic == nil)
@@ -168,6 +188,8 @@ module Models
 			else
 				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['user_location'])
 				topicObject.owner_name = topic['fname'] + ' ' + topic['lname']
+				topicObject.num_comments = topic['num_comments']
+				topicObject.total_score = topic['total_score']
 				topicObject
 			end
 		end
@@ -198,15 +220,31 @@ module Models
 			topics
 		end
 
-		def self.findByUser(user_id)
-			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
-							INNER JOIN users ON users.id = topics.owner_id WHERE users.id=$1
-							ORDER BY topics.created_on DESC"
+		def self.findByUser(user_id, sort_by)
+			# query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
+			# 				INNER JOIN users ON users.id = topics.owner_id WHERE users.id=$1
+			# 				ORDER BY topics.created_on DESC"
+			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname,
+							count(comments.id) AS num_comments, sum(votes.score) AS total_score 
+							FROM topics INNER JOIN users ON users.id = topics.owner_id
+							LEFT JOIN comments ON comments.topic_id = topics.id
+							LEFT JOIN votes ON votes.topic_id = topics.id
+							WHERE users.id=$1
+							GROUP BY topics.id, users.fname, users.lname"
+			if (sort_by == "recent")
+				query << " ORDER BY topics.created_on DESC"
+			elsif (sort_by == "comments")
+				query << " ORDER BY num_comments DESC"
+			elsif (sort_by == "popular")
+				query << " ORDER BY total_score DESC" 
+			end
 			results = $db.exec_params(query, [user_id])
 			topics = []
 			results.each do |topic|
 				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['topic_location'])
 				topicObject.owner_name = topic['fname'] + ' ' + topic['lname']
+				topicObject.num_comments = topic['num_comments']
+				topicObject.total_score = topic['total_score']
 				topics.push(topicObject)
 			end
 			topics

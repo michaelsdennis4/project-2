@@ -30,7 +30,8 @@ module Forum
     get('/users/:id') do
     	@current_user_name = User.find(current_user).name
     	@user = User.find(params[:id])
-      @topics = Topic.findByUser(params[:id])
+      @sort = "recent"
+      @topics = Topic.findByUser(params[:id], @sort)
     	erb :userpage
     end
 
@@ -63,6 +64,14 @@ module Forum
     	end
     end
 
+    post('/users/:id') do
+      @current_user_name = User.find(current_user).name
+      @user = User.find(params[:id])
+      @sort = params[:sort]
+      @topics = Topic.findByUser(params[:id], @sort)
+      erb :userpage
+    end
+
     patch('/users/:id') do
       @user = User.find(params[:id])
       @user.update(params)
@@ -92,7 +101,9 @@ module Forum
     end
 
     post('/topics/new') do
-      topic_id = Topic.createNew(params, current_user, request.ip)
+      # ip = request.ip
+      ip = "96.232.165.39"
+      topic_id = Topic.createNew(params, current_user, ip)
       redirect "/topics/#{topic_id}"
     end
 

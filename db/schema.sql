@@ -41,12 +41,12 @@
 -- 	user_location VARCHAR
 -- );
 
-CREATE TABLE votes (
-	id SERIAL PRIMARY KEY,
-	owner_id INTEGER NOT NULL REFERENCES users(id),
-	topic_id INTEGER NOT NULL REFERENCES topics(id),
-	score INTEGER
-);
+-- CREATE TABLE votes (
+-- 	id SERIAL PRIMARY KEY,
+-- 	owner_id INTEGER NOT NULL REFERENCES users(id),
+-- 	topic_id INTEGER NOT NULL REFERENCES topics(id),
+-- 	score INTEGER
+-- );
 
 
 
