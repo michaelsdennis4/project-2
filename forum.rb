@@ -122,7 +122,9 @@ module Forum
     end
 
     post('/comments/new/:topic_id') do
-      Comment.createNew(params, current_user)
+      # ip = request.ip
+      ip = "96.232.165.39"
+      Comment.createNew(params, current_user, ip)
       redirect "/topics/#{params[:topic_id]}"
     end
 

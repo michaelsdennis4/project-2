@@ -22,6 +22,9 @@
 
 	<div class="topic_detail">
 		<h2 id="box_caption">Edit Topic for <%= @current_user_name %></h2>
+		<h4 class="tde_caption">Created on: <%= @topic.created_on %> | 
+		Comments: <%= @topic.num_comments %> | Total Stars: <%= @topic.total_score %></h4>
+		<h4 class="tde_caption">Location: <%= @topic.user_location %></h4>
 		<form class="enter_topic" action="/topics/<%= @topic.id %>" method="post">
 			<label class="enter_topic_label" for="subject">Subject:</label>
 			<input class="enter_topic_field" type="text" name="subject" value="<%= @topic.subject %>"/>
@@ -36,9 +39,10 @@
 
 	<div class="topic_detail">
 		<h2 id="box_caption"><%= @topic.subject %></h2>
-		<h3 class="td_caption">Created by: <%= @topic.owner_name %></h3>
-		<h3 class="td_caption">Created on: <%= @topic.created_on %></h3>
-			<form class="vote" action="/votes/<%= @topic.id %>" method="post">
+		<h4 class="td_caption">Created by: <%= @topic.owner_name %></h4>
+		<h4 class="td_caption">Created on: <%= @topic.created_on %></h4>
+		<h4 class="td_caption">Location: <%= @topic.user_location %></h4>
+		<form class="vote" action="/votes/<%= @topic.id %>" method="post">
 			<label for="score">Do you like this topic?</label>
 			<select id="vote" name="score" onchange="this.form.submit()">
 				<% if (@vote == nil) %>
@@ -58,7 +62,7 @@
 			  <% end %>
 			</select>
 		</form>
-		<h3 class="td_caption">Location: <%= @topic.user_location %></h3>
+		<h4 class="td_caption">Comments: <%= @topic.num_comments %> | Total Stars: <%= @topic.total_score %></h4>
 		<div class="topic_details_box">
 			<%= @topic.details_md %>
 		</div>
@@ -81,8 +85,9 @@
 			<% if (comment.owner_id == current_user) %>
 				<div class="add_comment">
 					<h5 class="comment_text">Created by: <%= comment.owner_name %> | Created on: <%= comment.created_on %></h5>
+					<h5 class="comment_text">Location: <%= comment.user_location %></h5>
 					<form action="/comments/<%= comment.id %>/<%= @topic.id %>" method="post">
-						<textarea class="enter_comment_detail" name="details" placeholder="Go ahead, enter your comment..."><%= comment.details %></textarea>
+						<textarea class="edit_comment_detail" name="details" placeholder="Go ahead, enter your comment..."><%= comment.details %></textarea>
 						<input type="hidden" name="_method" value="patch"/>
 						<input class="comment_submit" type="submit" value="Update Comment"/>
 					</form>
@@ -90,6 +95,7 @@
 			<% else %>
 				<div class="comment">
 					<h5 class="comment_text">Created by: <%= comment.owner_name %> | Created on: <%= comment.created_on %></h5>
+					<h5 class="comment_text">Location: <%= comment.user_location %></h5>
 					<hr>
 					<p class="comment_text"><%= comment.details %><p>
 				</div>

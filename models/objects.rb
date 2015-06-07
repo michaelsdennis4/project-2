@@ -142,8 +142,9 @@ module Models
 		include Methods, Redcarpet
 
 		attr_reader :id, :created_on, :owner_id
-		attr_accessor :subject, :owner_name, :details, :details_md, :user_location, 
-									:num_comments, :total_score
+		attr_writer :user_location
+		attr_accessor :subject, :owner_name, :details, :details_md,  
+									:num_comments, :total_score, :show_location 
 
 		def initialize(id, owner_id, subject, details, created_on, user_location)
 			@id = id
@@ -172,35 +173,36 @@ module Models
 		end
 
 		def self.find(id)
-			# query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
-			# 				JOIN users ON users.id = topics.owner_id WHERE topics.id=$1"
 			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname,
+							users.show_location AS show_location,
 							count(comments.id) AS num_comments, sum(votes.score) AS total_score 
 							FROM topics INNER JOIN users ON users.id = topics.owner_id
 							LEFT JOIN comments ON comments.topic_id = topics.id
 							LEFT JOIN votes ON votes.topic_id = topics.id
 							WHERE topics.id=$1
-							GROUP BY topics.id, users.fname, users.lname"
+							GROUP BY topics.id, users.fname, users.lname, users.show_location"
 			result = $db.exec_params(query, [id.to_i])
 			topic = result.first
 			if (topic == nil)
 				nil
 			else
 				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['user_location'])
-				topicObject.owner_name = topic['fname'] + ' ' + topic['lname']
+				topicObject.owner_name = "#{topic['fname']} #{topic['lname']}"
 				topicObject.num_comments = topic['num_comments']
 				topicObject.total_score = topic['total_score']
+				topicObject.show_location = topic['show_location']
 				topicObject
 			end
 		end
 
 		def self.findAll(sort_by)
 			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname,
+							users.show_location AS show_location,
 							count(comments.id) AS num_comments, sum(votes.score) AS total_score 
 							FROM topics INNER JOIN users ON users.id = topics.owner_id
 							LEFT JOIN comments ON comments.topic_id = topics.id
 							LEFT JOIN votes ON votes.topic_id = topics.id
-							GROUP BY topics.id, users.fname, users.lname"
+							GROUP BY topics.id, users.fname, users.lname, users.show_location"
 			if (sort_by == "recent")
 				query << " ORDER BY topics.created_on DESC"
 			elsif (sort_by == "comments")
@@ -212,25 +214,24 @@ module Models
 			topics = []
 			results.each do |topic|
 				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['user_location'])
-				topicObject.owner_name = topic['fname'] + ' ' + topic['lname']
+				topicObject.owner_name = "#{topic['fname']} #{topic['lname']}"
 				topicObject.num_comments = topic['num_comments']
 				topicObject.total_score = topic['total_score']
+				topicObject.show_location = topic['show_location']
 				topics.push(topicObject)
 			end
 			topics
 		end
 
 		def self.findByUser(user_id, sort_by)
-			# query = "SELECT topics.*, users.fname AS fname, users.lname AS lname FROM topics
-			# 				INNER JOIN users ON users.id = topics.owner_id WHERE users.id=$1
-			# 				ORDER BY topics.created_on DESC"
 			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname,
+							users.show_location AS show_location,
 							count(comments.id) AS num_comments, sum(votes.score) AS total_score 
 							FROM topics INNER JOIN users ON users.id = topics.owner_id
 							LEFT JOIN comments ON comments.topic_id = topics.id
 							LEFT JOIN votes ON votes.topic_id = topics.id
 							WHERE users.id=$1
-							GROUP BY topics.id, users.fname, users.lname"
+							GROUP BY topics.id, users.fname, users.lname, users.show_location"
 			if (sort_by == "recent")
 				query << " ORDER BY topics.created_on DESC"
 			elsif (sort_by == "comments")
@@ -241,10 +242,11 @@ module Models
 			results = $db.exec_params(query, [user_id])
 			topics = []
 			results.each do |topic|
-				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['topic_location'])
-				topicObject.owner_name = topic['fname'] + ' ' + topic['lname']
+				topicObject = Topic.new(topic['id'], topic['owner_id'], topic['subject'], topic['details'], topic['created_on'], topic['user_location'])
+				topicObject.owner_name = "#{topic['fname']} #{topic['lname']}"
 				topicObject.num_comments = topic['num_comments']
 				topicObject.total_score = topic['total_score']
+				topicObject.show_location = topic['show_location']
 				topics.push(topicObject)
 			end
 			topics
@@ -256,13 +258,24 @@ module Models
 			$db.exec_params(query, qparams)
 		end
 
+		def user_location
+			if (@show_location == 't')
+				@user_location
+			else
+				""
+			end
+		end			
+
 
 	end
 
 	class Comment
 
+		include Methods
+
 		attr_reader :id, :created_on, :owner_id, :topic_id
-		attr_accessor :user_location, :owner_name, :details
+		attr_writer :user_location
+		attr_accessor :show_location, :owner_name, :details
 
 		def initialize(id, owner_id, topic_id, details, created_on, user_location)
 			@id = id
@@ -273,16 +286,18 @@ module Models
 			@user_location = user_location
 		end
 
-		def self.createNew(params, user_id)
+		def self.createNew(params, user_id, ip_address)
+			location = Methods.getLocation(ip_address)
 			query = "INSERT INTO comments (owner_id, topic_id, details, created_on, user_location)
-							VALUES ($1, $2, $3, CURRENT_TIMESTAMP, 'unknown') RETURNING id";
-			qparams = [user_id, params[:topic_id], params[:details]]
+							VALUES ($1, $2, $3, CURRENT_TIMESTAMP, $4) RETURNING id";
+			qparams = [user_id, params[:topic_id], params[:details], location]
 			result = $db.exec_params(query, qparams)
 			comment_id = result.entries.first['id']
 		end
 
 		def self.find(id)
-			query = "SELECT comments.*, users.fname AS fname, users.lname AS lname FROM comments
+			query = "SELECT comments.*, users.fname AS fname, users.lname AS lname, 
+							users.show_location AS show_location FROM comments
 							INNER JOIN users ON users.id = comments.owner_id WHERE comments.id=$1"
 			result = $db.exec_params(query, [id.to_i])
 			comment = result.first
@@ -290,13 +305,15 @@ module Models
 				nil
 			else
 				commentObject = Comment.new(comment['id'], comment['owner_id'], comment['details'], comment['details'], comment['created_on'], comment['user_location'])
-				commentObject.owner_name = comment['fname'] + ' ' + comment['lname']
+				commentObject.owner_name = "#{comment['fname']} #{comment['lname']}"
+				commentObject.show_location = comment['show_location']
 				commentObject
 			end
 		end
 
 		def self.findByTopic(topic_id)
-			query = "SELECT comments.*, users.fname AS fname, users.lname AS lname FROM comments
+			query = "SELECT comments.*, users.fname AS fname, users.lname AS lname,
+			 				users.show_location AS show_location FROM comments
 							INNER JOIN users ON users.id = comments.owner_id 
 							INNER JOIN topics ON topics.id = comments.topic_id
 							WHERE topics.id=$1 ORDER BY comments.created_on DESC"
@@ -304,7 +321,8 @@ module Models
 			comments = []
 			results.each do |comment|
 				commentObject = Comment.new(comment['id'], comment['owner_id'], comment['details'], comment['details'], comment['created_on'], comment['user_location'])
-				commentObject.owner_name = comment['fname'] + ' ' + comment['lname']
+				commentObject.owner_name = "#{comment['fname']} #{comment['lname']}"
+				commentObject.show_location = comment['show_location']
 				comments.push(commentObject)
 			end
 			comments
@@ -314,6 +332,14 @@ module Models
 			query = "UPDATE comments SET details=$1 WHERE id=$2"
 			qparams = [params[:details], @id]
 			results = $db.exec_params(query, qparams)
+		end
+
+		def user_location
+			if (@show_location == 't')
+				@user_location
+			else
+				""
+			end
 		end
 
 	end
