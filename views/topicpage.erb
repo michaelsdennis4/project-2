@@ -9,6 +9,7 @@
 
 	<div class="topic_detail">
 		<h2 id="box_caption">What's on your mind, <%= @current_user_name %>?</h2>
+		<hr>
 		<form class="enter_topic" action="/topics/new" method="post">
 			<label class="enter_topic_label" for="subject">Subject:</label>
 			<input class="enter_topic_field" type="text" name="subject" placeholder="Enter your subject..."/>
@@ -18,10 +19,11 @@
 		</form>
 	</div>
  
-<% elsif (current_user == @topic.owner_id) %>
+<% elsif ((current_user == @topic.owner_id) && (@edit)) %>
 
 	<div class="topic_detail">
 		<h2 id="box_caption">Edit Topic for <%= @current_user_name %></h2>
+		<hr>
 		<h4 class="tde_caption">Created on: <%= @topic.created_on %> | 
 		Comments: <%= @topic.num_comments %> | Total Stars: <%= @topic.total_score %></h4>
 		<h4 class="tde_caption">Location: <%= @topic.user_location %></h4>
@@ -33,13 +35,26 @@
 			<input type="hidden" name="_method" value="patch"/>
 			<input class="topic_submit" type="submit" value="Update Topic"/>
 		</form>
+		<form class="enter_topic" action="/topics/<%= @topic.id %>" method="post">
+			<input type="hidden" name="_method" value="delete"/>
+			<input class="delete_topic" type="submit" value="Delete"/>
+		</form>
+
 	</div>
 
 <% else %>
 
 	<div class="topic_detail">
 		<h2 id="box_caption"><%= @topic.subject %></h2>
-		<h4 class="td_caption">Created by: <%= @topic.owner_name %></h4>
+		<hr>
+		<form class="edit" action="/topics/edit/<%= @topic.id %>" method="get">
+			<input class="edit_topic" type="submit" value="Edit"/>
+		</form>
+		<% if (@topic.user_active == 't') %>
+			<h4 class="td_caption">Created by: <a href="/users/<%= @topic.owner_id %>"><%= @topic.owner_name %></a></h4>
+		<% else %>
+			<h4 class="td_caption">Created by: <%= @topic.owner_name %></h4>
+		<% end %>
 		<h4 class="td_caption">Created on: <%= @topic.created_on %></h4>
 		<h4 class="td_caption">Location: <%= @topic.user_location %></h4>
 		<form class="vote" action="/votes/<%= @topic.id %>" method="post">
@@ -72,6 +87,7 @@
 
 <div class="comments_list">
 	<h2 id="box_caption">Comments</h2>
+	<hr>
 	<% if (@topic != nil) %>
 		<!-- new comment -->
 		<form class="add_comment" action="/comments/new/<%= @topic.id %>" method="post">
@@ -85,12 +101,16 @@
 			<% if (comment.owner_id == current_user) %>
 				<div class="add_comment">
 					<h5 class="comment_text">Created by: <%= comment.owner_name %> | Created on: <%= comment.created_on %></h5>
-					<h5 class="comment_text">Location: <%= comment.user_location %></h5>
+					<h5 class="comment_text">Location: <%= comment.user_location %></h5>	
 					<form action="/comments/<%= comment.id %>/<%= @topic.id %>" method="post">
 						<textarea class="edit_comment_detail" name="details" placeholder="Go ahead, enter your comment..."><%= comment.details %></textarea>
 						<input type="hidden" name="_method" value="patch"/>
 						<input class="comment_submit" type="submit" value="Update Comment"/>
-					</form>
+					</form>	
+						<form action="/comments/<%= comment.id %>/<%= @topic.id %>" method="post">
+						<input type="hidden" name="_method" value="delete"/>
+						<input class="delete_comment" type="submit" value="Delete"/>
+					</form>		
 				</div>
 			<% else %>
 				<div class="comment">

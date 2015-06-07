@@ -9,6 +9,7 @@
 
 	<div class="user_profile_box">
 		<h2 id="box_caption">My Profile</h2>
+		<hr>
 		<img id="profile_picture" src="<%= @user.image %>"/>
 
 		<form class="profileform" action="/users/<%= @user.id %>" method="post">
@@ -63,6 +64,10 @@
 			<input type="hidden" name="_method" value="patch"/>
 			<input class="profile_submit" type="submit" value="Update My Profile"/>
 		</form>
+		<form class="profileform" action="/users/<%= @user.id %>" method="post">
+			<input type="hidden" name="_method" value="delete"/>
+			<input class="deactivate_profile" type="submit" value="Deactivate"/>
+		</form>
 
 	</div>
 
@@ -70,6 +75,7 @@
 
 	<div class="user_profile_box">
 		<h2 id="box_caption"><%= @user.fname %>'s Profile</h2>
+		<hr>
 		<img id="profile_picture" src="<%= @user.image %>"/>
 		<h4>Name: <%= @user.fname %> <%= @user.lname %></h4>
 		<% if (@user.gender == 'm') %>
@@ -77,8 +83,7 @@
 		<% elsif (@user.gender == 'f') %>
 			<h4>Gender: Female</h4>
 		<% end %>
-
-		<h4>E-mail: <%= @user.email %></h4>
+		<h4>E-mail: <a href="mailto:<%= @user.email %>"><%= @user.email %></a></h4>
 		<h4>Phone: <%= @user.phone %></h4>
 		<h4>User since: <%= @user.signed_up_on %></h4>
 		<!-- <h3>About <%= @user.fname %>:</h3> -->
@@ -96,24 +101,23 @@
 	<% else %>
 		<h2 id="box_caption"><%= @user.fname %>'s Topics</h2>
 	<% end %>
+	<hr>
+	<form class="topic_sort" action="/users/<%= @user.id %>" method="post">
+		<label for="sort">Sort by:</label>
+		<select id="topic_sort" name="sort" onchange="this.form.submit()">	
+		  <option value="recent" <% if (@sort == "recent") %> selected <% end %>>Most Recent</option> 
+		  <option value="popular" <% if (@sort == "popular") %> selected <% end %>>Most Popular</option>
+		  <option value="comments" <% if (@sort == "comments") %> selected <% end %>>Most Comments</option>
+		</select>
+	</form>
 
-		<form class="topic_sort" action="/users/<%= @user.id %>" method="post">
-			<label for="sort">Sort by:</label>
-			<select id="topic_sort" name="sort" onchange="this.form.submit()">	
-			  <option value="recent" <% if (@sort == "recent") %> selected <% end %>>Most Recent</option> 
-			  <option value="popular" <% if (@sort == "popular") %> selected <% end %>>Most Popular</option>
-			  <option value="comments" <% if (@sort == "comments") %> selected <% end %>>Most Comments</option>
-			</select>
-		</form>
-
-		<% @topics.each do |topic| %>
-			<% binding.pry %>
-			<div class="topic">
-				<h4 class="topic_text"><a href="/topics/<%= topic.id %>"><%= topic.subject %></a></h4>
-				<h5 class="topic_text">Created by: <%= topic.owner_name %> | Created on: <%= topic.created_on %></h5>
-					<h5 class="topic_text">Comments: <%= topic.num_comments %> | Total Stars: <%= topic.total_score %> | Location: <%= topic.user_location %></h5>
-			</div>
-		<% end %>
+	<% @topics.each do |topic| %>
+		<div class="topic">
+			<h4 class="topic_text"><a href="/topics/<%= topic.id %>"><%= topic.subject %></a></h4>
+			<h5 class="topic_text">Created by: <%= topic.owner_name %> | Comments: <%= topic.num_comments %> | Total Stars: <%= topic.total_score %></h5>
+				<h5 class="topic_text">Created on: <%= topic.created_on %> | Location: <%= topic.user_location %></h5>
+		</div>
+	<% end %>
 </div>
 
 

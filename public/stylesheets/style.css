@@ -9,6 +9,7 @@ img {
 }
 
 hr {
+	color: black;
 	background: solid black 1px;
 }
 
@@ -211,9 +212,10 @@ hr {
 
 #user_image {
 	float: left;
-	width: 50px;
+	width: 60px;
 	height: 60px;
-	border: solid black 1px;
+	border: solid 1px;
+	border-color: rgba(50, 50, 255, 1);
 	border-radius: 5px;
 	margin-top: 10px;
 	margin-left: 10px;
@@ -223,10 +225,14 @@ hr {
 .topic_sort {
 	display: block;
 	float: left;
-	margin-top: -30px;
+	margin-top: -45px;
 	margin-left: 10px;
 	margin-bottom: 10px;
 	clear: left;
+}
+
+#topic_sort {
+	margin-left: 5px;
 }
 
 /*TOPIC PAGE*/
@@ -287,7 +293,7 @@ hr {
 	background-color: white;
 	margin-top: 5px;
 	margin-left: 10px;
-	margin-bottom: 30px;
+	margin-bottom: 20px;
 }
 
 .enter_topic_detail {
@@ -316,6 +322,20 @@ hr {
 	border-radius: 5px;
 }
 
+.delete_topic {
+	float: right;
+	width: 100px;
+	height: 30px;
+	margin-top: -108px;
+	margin-bottom: 0;
+	margin-left: auto;
+	margin-right: 20px;
+	background-color: red;
+	color: white;
+	border: none;
+	border-radius: 5px;
+}
+
 .td_caption {
 	margin-top: 5px;
 	margin-bottom: 5px;
@@ -332,10 +352,12 @@ hr {
 	height: 320px;
 	margin-top: 10px;
 	margin-bottom: 10px;
-	border: solid black 1px;
+	border: solid 1px;
+	border-color: rgba(50, 50, 255, 1);
 	background-color: white;
 	border-radius: 10px;
 	padding: 10px;
+	overflow: scroll;
 }
 
 #add_comment_caption {
@@ -349,7 +371,7 @@ hr {
 	border: solid 1px;
 	border-color: rgba(50, 50, 255, 1);
 	border-radius: 10px;
-	background-color: none;
+	background-color: white;
 	margin-top: 0;
 	margin-bottom: 10px;
 	padding: 10px;
@@ -369,11 +391,12 @@ hr {
 	text-align: left;
 	border: solid 1px;
 	border-radius: 5px;
-	/*border-color: rgba(50, 50, 255, 1);*/
-	border-color: black;
+	border-color: rgba(50, 50, 255, 1);
+	/*border-color: black;*/
 	margin-top: 5px;
 	margin-left: 5px;
 	margin-bottom: 5px;
+	overflow: scroll;
 }
 
 .edit_comment_detail {
@@ -382,11 +405,12 @@ hr {
 	text-align: left;
 	border: solid 1px;
 	border-radius: 5px;
-	/*border-color: rgba(50, 50, 255, 1);*/
-	border-color: black;
+	border-color: rgba(50, 50, 255, 1);
+	/*border-color: black;*/
 	margin-top: 5px;
 	margin-left: 5px;
 	margin-bottom: 5px;
+	overflow: scroll;
 }
 
 .comment_submit {
@@ -400,6 +424,39 @@ hr {
 	background-color: rgba(50, 50, 255, 1);
 	color: white;
 	border: none;
+	border-radius: 5px;
+}
+
+.edit_topic {
+	float: right;
+	width: 100px;
+	height: 30px;
+	font-size: 12px;
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: auto;
+	margin-right: 15px;
+	background-color: rgba(50, 50, 255, 1);
+	color: white;
+	border: none;
+	border-radius: 5px;
+}
+
+.delete_comment {
+	float: right;
+	text-align: right;
+	width: 55px;
+	height: 20px;
+	font-size: 12px;
+	margin-top: -20px;
+	margin-bottom: 0;
+	margin-left: auto;
+	margin-right: 20px;
+	background-color: red;
+	color: white;
+	border: none;
+/*	border: solid 1px;
+	border-color: red;*/
 	border-radius: 5px;
 }
 
@@ -473,7 +530,8 @@ hr {
 	width: 200px;
 	height: 200px;
 	float: left;
-	border: solid black 1px;
+	border: solid 1px;
+	border-color: rgba(50, 50, 255, 1);
 	border-radius: 10px;
 	margin-right: 10px;
 }
@@ -482,7 +540,8 @@ hr {
 	width: 100%;
 	height: 200px;
 	float: left;
-	border: solid black 1px;
+	border: solid 1px;
+	border-color: rgba(50, 50, 255, 1);
 	border-radius: 10px;
 	margin-top: 0;
 	margin-right: 10px;
@@ -491,7 +550,7 @@ hr {
 .profile_label {
 	width: 100px;
 	display: inline-block;
-	margin-left: 10px;
+	margin-left: 5px;
 	margin-top: 5px;
 	margin-bottom: 15px;
 	color: black;
@@ -538,6 +597,20 @@ hr {
 	margin-left: 30%;
 	margin-right: auto;
 	background-color: rgba(50, 50, 255, 1);
+	color: white;
+	border: none;
+	border-radius: 5px;
+}
+
+.deactivate_profile {
+	float: right;
+	width: 20%;
+	height: 30px;
+	margin-top: -30px;
+	margin-bottom: 0;
+	margin-left: auto;
+	margin-right: 20px;
+	background-color: red;
 	color: white;
 	border: none;
 	border-radius: 5px;

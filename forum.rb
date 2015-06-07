@@ -78,6 +78,12 @@ module Forum
       redirect "/users/#{@user.id}"
     end
 
+    delete('/users/:id') do
+      @user = User.find(params[:id])
+      @user.delete
+      redirect "/"
+    end
+
     get('/hub') do
       @current_user_name = User.find(current_user).name
       @users = User.findAll
@@ -107,11 +113,21 @@ module Forum
       redirect "/topics/#{topic_id}"
     end
 
+    get('/topics/edit/:id') do
+      @current_user_name = User.find(current_user).name
+      @topic = Topic.find(params[:id])
+      @comments = Comment.findByTopic(params[:id])
+      @vote = Vote.find(current_user, params[:id])
+      @edit = true;
+      erb :topicpage
+    end
+
     get('/topics/:id') do
       @current_user_name = User.find(current_user).name
       @topic = Topic.find(params[:id])
       @comments = Comment.findByTopic(params[:id])
       @vote = Vote.find(current_user, params[:id])
+      @edit = false;
       erb :topicpage
     end
 
@@ -119,6 +135,12 @@ module Forum
       @topic = Topic.find(params[:id])
       @topic.update(params)
       redirect "/topics/#{@topic.id}"
+    end
+
+    delete('/topics/:id') do
+      @topic = Topic.find(params[:id])
+      @topic.delete
+      redirect "/hub"
     end
 
     post('/comments/new/:topic_id') do
@@ -131,6 +153,12 @@ module Forum
     patch('/comments/:id/:topic_id') do
       comment = Comment.find(params[:id])
       comment.update(params)
+      redirect "/topics/#{params[:topic_id]}"
+    end
+
+    delete('/comments/:id/:topic_id') do
+      comment = Comment.find(params[:id])
+      comment.delete
       redirect "/topics/#{params[:topic_id]}"
     end
 

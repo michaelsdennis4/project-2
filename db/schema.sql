@@ -16,7 +16,8 @@
 -- 	phone VARCHAR,
 -- 	show_location BOOLEAN NOT NULL,
 -- 	get_notifications VARCHAR,
--- 	bio: TEXT
+-- 	bio TEXT,
+--  active BOOLEAN 
 -- );
 
 -- DROP TABLE IF EXISTS comments;
@@ -47,6 +48,8 @@
 -- 	topic_id INTEGER NOT NULL REFERENCES topics(id),
 -- 	score INTEGER
 -- );
+
+ALTER TABLE users ADD COLUMN active BOOLEAN  
 
 
 

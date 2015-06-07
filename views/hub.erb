@@ -9,33 +9,39 @@
 <div class="topics_list">
 
 	<h2 id="box_caption">Topics</h2>
+	<hr>
+	<form class="topic_sort" action="/hub" method="post">
+		<label for="sort">Sort Topics by:</label>
+		<select id="topic_sort" name="sort" onchange="this.form.submit()">	
+		  <option value="recent" <% if (@sort == "recent") %> selected <% end %>>Most Recent</option> 
+		  <option value="popular" <% if (@sort == "popular") %> selected <% end %>>Most Popular</option>
+		  <option value="comments" <% if (@sort == "comments") %> selected <% end %>>Most Comments</option>
+		</select>
+	</form>
 
-		<form class="topic_sort" action="/hub" method="post">
-			<label for="sort">Sort Topics by:</label>
-			<select id="topic_sort" name="sort" onchange="this.form.submit()">	
-			  <option value="recent" <% if (@sort == "recent") %> selected <% end %>>Most Recent</option> 
-			  <option value="popular" <% if (@sort == "popular") %> selected <% end %>>Most Popular</option>
-			  <option value="comments" <% if (@sort == "comments") %> selected <% end %>>Most Comments</option>
-			</select>
-		</form>
-
-		<% @topics.each do |topic| %>
-			<div class="topic">
-				<h4 class="topic_text"><a href="/topics/<%= topic.id %>"><%= topic.subject %></a></h4>
-				<h5 class="topic_text">Created by: <%= topic.owner_name %> | Created on: <%= topic.created_on %>  | Location: <%= topic.user_location %> </h5> 
-				<h5 class="topic_text">Comments: <%= topic.num_comments %>  |  Total Stars: <%= topic.total_score %>   </h5>
-			</div>
-		<% end %>
+	<% @topics.each do |topic| %>
+		<div class="topic">
+			<h4 class="topic_text"><a href="/topics/<%= topic.id %>"><%= topic.subject %></a></h4>
+			<% if (topic.user_active == 't') %>
+				<h5 class="topic_text">Created by: <a href="/users/<%= topic.owner_id %>"><%= topic.owner_name %></a>
+			<% else %>
+				<h5 class="topic_text">Created by: <%= topic.owner_name %></a>
+			<% end %>
+			 | Comments: <%= topic.num_comments %> | Total Stars: <%= topic.total_score %></h5> 
+			<h5 class="topic_text">Created on: <%= topic.created_on %> | Location: <%= topic.user_location %></h5>
+		</div>
+	<% end %>
 </div>
 
 <div class="users_list">
 	<h2 id="box_caption">Users</h2>
-		<% @users.each do |user| %>
-			<div class="user">
-				<img id="user_image" src="<%= user.image %>"/>
-				<h5 id="user_text"><a href="/users/<%= user.id %>"><%= user.fname %> <%= user.lname %></a></h5>
-			</div>
-		<% end %>
+	<hr>
+	<% @users.each do |user| %>
+		<div class="user">
+			<img id="user_image" src="<%= user.image %>"/>
+			<h5 id="user_text"><a href="/users/<%= user.id %>"><%= user.fname %> <%= user.lname %></a></h5>
+		</div>
+	<% end %>
 </div>
 
 

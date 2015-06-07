@@ -21,7 +21,7 @@ module Models
 
 		attr_reader :id, :signed_up_on
 	  attr_accessor :fname, :lname, :email, :password, :gender, :image,
-									:phone, :show_location, :get_notifications, :bio
+									:phone, :show_location, :get_notifications, :bio, :active
 
 		def initialize(id, fname, lname, email, password, signed_up_on)
 			@id = id
@@ -62,8 +62,10 @@ module Models
 		end
 
 		def self.createNew(params)
-			query = "INSERT INTO users (fname, lname, email, password, signed_up_on, show_location)
-							VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, $5) RETURNING id, signed_up_on";
+			query = "INSERT INTO users (fname, lname, email, password, signed_up_on,
+			 				show_location, active)
+							VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, $5, 't')
+							RETURNING id, signed_up_on";
 			qparams = [params[:fname], params[:lname], params[:email], params[:pwd1], 'f']
 			result = $db.exec_params(query, qparams)
 			user_id = result.entries.first['id']
@@ -78,6 +80,9 @@ module Models
 				user_id = nil
 			else
 				user_id = user['id']
+				query = "UPDATE users SET active='t' WHERE id=$1"
+				$db.exec_params(query, [user_id])
+				user_id
 			end
 		end
 
@@ -96,12 +101,13 @@ module Models
 				userObject.show_location = user['show_location']
 				userObject.get_notifications = user['get_notifications']
 				userObject.bio = user['bio']
+				userObject.active = user['active']
 				userObject
 			end
 		end
 
 		def self.findAll
-			query = "SELECT * FROM users WHERE id > 0 ORDER BY lname, fname"
+			query = "SELECT * FROM users WHERE (id > 0 AND active='t') ORDER BY lname, fname"
 			results = $db.exec(query)
 			users = []
 			results.each do |user|
@@ -135,6 +141,11 @@ module Models
 			$db.exec_params(query, qparams)
 		end
 
+		def delete
+			query = "UPDATE users SET active='f' WHERE id=$1"
+			$db.exec_params(query, [@id])
+		end
+
 	end
 
 	class Topic
@@ -144,7 +155,7 @@ module Models
 		attr_reader :id, :created_on, :owner_id
 		attr_writer :user_location
 		attr_accessor :subject, :owner_name, :details, :details_md,  
-									:num_comments, :total_score, :show_location 
+									:num_comments, :total_score, :show_location, :user_active 
 
 		def initialize(id, owner_id, subject, details, created_on, user_location)
 			@id = id
@@ -174,13 +185,13 @@ module Models
 
 		def self.find(id)
 			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname,
-							users.show_location AS show_location,
+							users.show_location AS show_location, users.active AS active,
 							count(comments.id) AS num_comments, sum(votes.score) AS total_score 
 							FROM topics INNER JOIN users ON users.id = topics.owner_id
 							LEFT JOIN comments ON comments.topic_id = topics.id
 							LEFT JOIN votes ON votes.topic_id = topics.id
 							WHERE topics.id=$1
-							GROUP BY topics.id, users.fname, users.lname, users.show_location"
+							GROUP BY topics.id, users.fname, users.lname, users.show_location, users.active"
 			result = $db.exec_params(query, [id.to_i])
 			topic = result.first
 			if (topic == nil)
@@ -191,18 +202,19 @@ module Models
 				topicObject.num_comments = topic['num_comments']
 				topicObject.total_score = topic['total_score']
 				topicObject.show_location = topic['show_location']
+				topicObject.user_active = topic['active']
 				topicObject
 			end
 		end
 
 		def self.findAll(sort_by)
 			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname,
-							users.show_location AS show_location,
+							users.show_location AS show_location, users.active AS active,
 							count(comments.id) AS num_comments, sum(votes.score) AS total_score 
 							FROM topics INNER JOIN users ON users.id = topics.owner_id
 							LEFT JOIN comments ON comments.topic_id = topics.id
 							LEFT JOIN votes ON votes.topic_id = topics.id
-							GROUP BY topics.id, users.fname, users.lname, users.show_location"
+							GROUP BY topics.id, users.fname, users.lname, users.show_location, users.active"
 			if (sort_by == "recent")
 				query << " ORDER BY topics.created_on DESC"
 			elsif (sort_by == "comments")
@@ -218,6 +230,7 @@ module Models
 				topicObject.num_comments = topic['num_comments']
 				topicObject.total_score = topic['total_score']
 				topicObject.show_location = topic['show_location']
+				topicObject.user_active = topic['active']
 				topics.push(topicObject)
 			end
 			topics
@@ -225,13 +238,13 @@ module Models
 
 		def self.findByUser(user_id, sort_by)
 			query = "SELECT topics.*, users.fname AS fname, users.lname AS lname,
-							users.show_location AS show_location,
+							users.show_location AS show_location, users.active AS active,
 							count(comments.id) AS num_comments, sum(votes.score) AS total_score 
 							FROM topics INNER JOIN users ON users.id = topics.owner_id
 							LEFT JOIN comments ON comments.topic_id = topics.id
 							LEFT JOIN votes ON votes.topic_id = topics.id
 							WHERE users.id=$1
-							GROUP BY topics.id, users.fname, users.lname, users.show_location"
+							GROUP BY topics.id, users.fname, users.lname, users.show_location, users.active"
 			if (sort_by == "recent")
 				query << " ORDER BY topics.created_on DESC"
 			elsif (sort_by == "comments")
@@ -247,6 +260,7 @@ module Models
 				topicObject.num_comments = topic['num_comments']
 				topicObject.total_score = topic['total_score']
 				topicObject.show_location = topic['show_location']
+				topicObject.user_active = topic['active']
 				topics.push(topicObject)
 			end
 			topics
@@ -258,6 +272,15 @@ module Models
 			$db.exec_params(query, qparams)
 		end
 
+		def delete
+			query = "DELETE FROM votes WHERE topic_id=$1"
+			$db.exec_params(query, [@id])
+			query = "DELETE FROM comments WHERE topic_id=$1"
+			$db.exec_params(query, [@id])
+			query = "DELETE FROM topics WHERE id=$1"
+			$db.exec_params(query, [@id])
+		end
+
 		def user_location
 			if (@show_location == 't')
 				@user_location
@@ -265,7 +288,6 @@ module Models
 				""
 			end
 		end			
-
 
 	end
 
@@ -332,6 +354,11 @@ module Models
 			query = "UPDATE comments SET details=$1 WHERE id=$2"
 			qparams = [params[:details], @id]
 			results = $db.exec_params(query, qparams)
+		end
+
+		def delete
+			query = "DELETE FROM comments WHERE id=$1"
+			$db.exec_params(query, [@id])
 		end
 
 		def user_location
