@@ -33,19 +33,7 @@
 			</select>
 			<label class="profile_label" for "phone">Phone:</label>
 			<input class="profile_field" type="text" name="phone" value="<%= @user.phone %>"/>
-			<label class="profile_label" for "password">Password:</label>
-			<input class="profile_field" type="password" name="password" value="<%= @user.password %>"/>
-			<label class="profile_label_long" for "email">E-mail:</label>
-			<input class="profile_field_long" type="text" name="email" value="<%= @user.email %>"/>
-			<label class="profile_label_long" for "image">Image URL:</label>
-			<input class="profile_field_long" type="text" name="image" value="<%= @user.image %>"/>
-			<label class="profile_label_long" for "show_location">Post Location? :</label>
-			<% if (@user.show_location == 't') %>
-				<input class="profile_field_long" type="checkbox" name="show_location" value="t" checked/>
-			<% else %>
-				<input class="profile_field_long" type="checkbox" name="show_location" value="f"/>
-			<% end %>
-			<label class="profile_label_long" for "get_notifications">Notifications? :</label>
+			<label class="profile_label" for "get_notifications">Notifications? :</label>
 			<select class="profile_field" name="get_notifications">
 				<% if (@user.get_notifications == 'email') %>
 					<option value="none">NONE</option>
@@ -60,7 +48,17 @@
 			  	<option value="email">Email</option> 
 			  	<option value="text">Text Message</option>
 			  <% end %>
-			</select>
+			</select>	
+			<label class="profile_label_long" for "email">E-mail:</label>
+			<input class="profile_field_long" type="text" name="email" value="<%= @user.email %>"/>
+			<label class="profile_label_long" for "image">Image URL:</label>
+			<input class="profile_field_long" type="text" name="image" value="<%= @user.image %>"/>
+			<label class="profile_label_long" for "show_location">Post Location? :</label>
+			<% if (@user.show_location == 't') %>
+				<input class="profile_field_long" type="checkbox" name="show_location" value="t" checked/>
+			<% else %>
+				<input class="profile_field_long" type="checkbox" name="show_location" value="f"/>
+			<% end %>
 			<input type="hidden" name="_method" value="patch"/>
 			<input class="profile_submit" type="submit" value="Update My Profile"/>
 		</form>
@@ -68,7 +66,20 @@
 			<input type="hidden" name="_method" value="delete"/>
 			<input class="deactivate_profile" type="submit" value="Deactivate"/>
 		</form>
-
+		<hr>
+		<form class="change_password" action="/users/pass/<%= @user.id %>" method="post">
+		 	<label class="pass_label" for "old_pass">Old Password:</label>
+			<input class="pass_field" type="password" name="old_pass"/>
+			<label class="pass_label" for "new_pass">New Password:</label>
+			<input class="pass_field" type="password" name="new_pass"/>
+			<input type="hidden" name="_method" value="patch"/>
+			<input class="pass_submit" type="submit" value="Change"/>
+		</form>
+		<% if (@result == true) %>
+			<h5 id="pass_result">Password changed successfully!</h5>
+		<% elsif (@result == false) %>
+			<h5 id="pass_result">Failed. Password NOT changed!</h5>
+		<% end %>
 	</div>
 
 <% else %>

@@ -72,15 +72,25 @@ module Forum
       erb :userpage
     end
 
-    patch('/users/:id') do
+    patch('/users/pass/:id') do
+      user = User.find(params[:id])
+      @result = user.changePassword(params[:old_pass], params[:new_pass])
+      @current_user_name = User.find(current_user).name
       @user = User.find(params[:id])
-      @user.update(params)
-      redirect "/users/#{@user.id}"
+      @sort = "recent"
+      @topics = Topic.findByUser(params[:id], @sort)
+      erb :userpage
+    end
+
+    patch('/users/:id') do
+      user = User.find(params[:id])
+      user.update(params)
+      redirect "/users/#{params[:id]}"
     end
 
     delete('/users/:id') do
-      @user = User.find(params[:id])
-      @user.delete
+      user = User.find(params[:id])
+      user.delete
       redirect "/"
     end
 

@@ -47,9 +47,11 @@
 	<div class="topic_detail">
 		<h2 id="box_caption"><%= @topic.subject %></h2>
 		<hr>
-		<form class="edit" action="/topics/edit/<%= @topic.id %>" method="get">
-			<input class="edit_topic" type="submit" value="Edit"/>
-		</form>
+		<% if (current_user == @topic.owner_id) %>
+			<form class="edit" action="/topics/edit/<%= @topic.id %>" method="get">
+				<input class="edit_topic" type="submit" value="Edit"/>
+			</form>
+		<% end %>
 		<% if (@topic.user_active == 't') %>
 			<h4 class="td_caption">Created by: <a href="/users/<%= @topic.owner_id %>"><%= @topic.owner_name %></a></h4>
 		<% else %>
@@ -57,26 +59,28 @@
 		<% end %>
 		<h4 class="td_caption">Created on: <%= @topic.created_on %></h4>
 		<h4 class="td_caption">Location: <%= @topic.user_location %></h4>
-		<form class="vote" action="/votes/<%= @topic.id %>" method="post">
-			<label for="score">Do you like this topic?</label>
-			<select id="vote" name="score" onchange="this.form.submit()">
-				<% if (@vote == nil) %>
-					<option value="0" selected>VOTE</option>
-					<option value="1">1 star</option>
-					<option value="2">2 stars</option>
-					<option value="3">3 stars</option>
-					<option value="4">4 stars</option>
-					<option value="5">5 stars</option> 
-				<% else %>
-					<option value="0">VOTE</option>
-				  <option value="1" <% if (@vote.score.to_i == 1) %> selected <% end %>>1 star</option> 
-				  <option value="2" <% if (@vote.score.to_i == 2) %> selected <% end %>>2 stars</option>
-				  <option value="3" <% if (@vote.score.to_i == 3) %> selected <% end %>>3 stars</option>
-				  <option value="4" <% if (@vote.score.to_i == 4) %> selected <% end %>>4 stars</option>
-				  <option value="5" <% if (@vote.score.to_i == 5) %> selected <% end %>>5 stars</option>
-			  <% end %>
-			</select>
-		</form>
+		<% if (current_user != @topic.owner_id) %> 
+			<form class="vote" action="/votes/<%= @topic.id %>" method="post">
+				<label for="score">Do you like this topic?</label>
+				<select id="vote" name="score" onchange="this.form.submit()">
+					<% if (@vote == nil) %>
+						<option value="0" selected>VOTE</option>
+						<option value="1">1 star</option>
+						<option value="2">2 stars</option>
+						<option value="3">3 stars</option>
+						<option value="4">4 stars</option>
+						<option value="5">5 stars</option> 
+					<% else %>
+						<option value="0">VOTE</option>
+					  <option value="1" <% if (@vote.score.to_i == 1) %> selected <% end %>>1 star</option> 
+					  <option value="2" <% if (@vote.score.to_i == 2) %> selected <% end %>>2 stars</option>
+					  <option value="3" <% if (@vote.score.to_i == 3) %> selected <% end %>>3 stars</option>
+					  <option value="4" <% if (@vote.score.to_i == 4) %> selected <% end %>>4 stars</option>
+					  <option value="5" <% if (@vote.score.to_i == 5) %> selected <% end %>>5 stars</option>
+				  <% end %>
+				</select>
+			</form>
+		<% end %>
 		<h4 class="td_caption">Comments: <%= @topic.num_comments %> | Total Stars: <%= @topic.total_score %></h4>
 		<div class="topic_details_box">
 			<%= @topic.details_md %>

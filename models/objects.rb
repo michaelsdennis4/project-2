@@ -20,7 +20,8 @@ module Models
 	class User 
 
 		attr_reader :id, :signed_up_on
-	  attr_accessor :fname, :lname, :email, :password, :gender, :image,
+		attr_writer :password
+	  attr_accessor :fname, :lname, :email, :gender, :image,
 									:phone, :show_location, :get_notifications, :bio, :active
 
 		def initialize(id, fname, lname, email, password, signed_up_on)
@@ -107,7 +108,7 @@ module Models
 		end
 
 		def self.findAll
-			query = "SELECT * FROM users WHERE (id > 0 AND active='t') ORDER BY lname, fname"
+			query = "SELECT * FROM users WHERE (id > 1 AND active='t') ORDER BY lname, fname"
 			results = $db.exec(query)
 			users = []
 			results.each do |user|
@@ -125,20 +126,31 @@ module Models
 		end
 
 		def name
-			@fname + ' ' + @lname
+			"#{@fname} #{@lname}"
 		end
 
 		def update(params)
-			query = "UPDATE users SET fname=$1, lname=$2, email=$3, password=$4, gender=$5, image=$6,
-							phone=$7, show_location=$8, get_notifications=$9 WHERE id=$10"
+			query = "UPDATE users SET fname=$1, lname=$2, email=$3, gender=$4, image=$5,
+							phone=$6, show_location=$7, get_notifications=$8 WHERE id=$9"
 			if (params[:show_location])
 				loc = "t"
 			else
 				loc = "f"
 			end
-			qparams = [params[:fname], params[:lname], params[:email], params[:password], params[:gender],
+			qparams = [params[:fname], params[:lname], params[:email], params[:gender],
 								params[:image], params[:phone], loc, params[:get_notifications], @id]
 			$db.exec_params(query, qparams)
+		end
+
+		def changePassword(old_pass, new_pass)
+			if (old_pass == @password)
+				query = "UPDATE users SET password=$1 WHERE id=$2"
+				qparams = [new_pass, @id]
+				$db.exec_params(query, qparams)
+				true
+			else
+				false
+			end
 		end
 
 		def delete
@@ -178,7 +190,7 @@ module Models
 			# create dummy vote object
 			query = "INSERT INTO votes (owner_id, topic_id, score)
 							VALUES ($1, $2, $3)"
-			qparams = [0, topic_id, 0]
+			qparams = [1, topic_id, 0]
 			$db.exec_params(query, qparams)
 			topic_id
 		end
