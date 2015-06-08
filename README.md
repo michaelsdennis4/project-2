@@ -12,11 +12,11 @@ Trello: https://trello.com/b/Kt5vh4Yu/wdi-project-2
 
 These links outlines the basic visual architecture (wireframe) of the application
 
-https://wireframe.cc/vBRDN8 (overall)
-https://wireframe.cc/uUPVQU (home page)
-https://wireframe.cc/PRgqpC (main forum page)
-https://wireframe.cc/ogUBdz (user page)
-https://wireframe.cc/u7VJfc (topic page)
+- https://wireframe.cc/vBRDN8 (overall)
+- https://wireframe.cc/uUPVQU (home page)
+- https://wireframe.cc/PRgqpC (main forum page)
+- https://wireframe.cc/ogUBdz (user page)
+- https://wireframe.cc/u7VJfc (topic page)
 
 API's
 RestClient - for external server calls
