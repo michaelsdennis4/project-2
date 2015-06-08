@@ -19,9 +19,9 @@ These links outlines the basic visual architecture (wireframe) of the applicatio
 - https://wireframe.cc/u7VJfc (topic page)
 
 API's
-RestClient - for external server calls
-RedCarpet - for converting markdown text to HTML
-IPInfo - for obtaining location from ip address
+- RestClient - for external server calls
+- RedCarpet - for converting markdown text to HTML
+- IPInfo - for obtaining location from ip address
 
 
 
